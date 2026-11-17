@@ -34,7 +34,7 @@ export const Login = () => {
 
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-semibold tracking-tight sm:text-[28px]">
-            Welcome back
+            Welcome 
           </h1>
           <p className="mt-2 text-sm leading-6 text-[#c9d2dc]/60">
             Sign in to continue to your workspace.

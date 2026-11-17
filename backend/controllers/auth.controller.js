@@ -14,7 +14,7 @@ export const  login=async(req,res)=>{
         }
         const decoded=await getAuth(app).verifyIdToken(firebaseToken);
 
-        const user=User.findOneAndUpdate(
+        const user=await User.findOneAndUpdate(
             {firebaseUid:decoded.uid},
             {
                 $set:{

@@ -1,8 +1,23 @@
 import { Button } from "@/components/ui/button"
+import { signInWithPopup } from "firebase/auth"
+import { auth, googleAuthProvider } from "@/firebase"
+import { login } from "@/features/auth"
 
 export function LoginForm() {
+  const handleGoogleLogin = async () => {
+    try {
+      const result  = await signInWithPopup(auth, googleAuthProvider)
+      const token=await result.user.getIdToken()
+      const data=await login(token)
+      console.log("Google login successful:", data);
+    } catch (error) {
+      console.error("Google login failed:", error);
+    }
+  }
+
   return (
     <Button
+      onClick={handleGoogleLogin}
       type="button"
       className="h-12 w-full gap-3 rounded-none border border-[#c9d2dc]/35 bg-[#06070B] px-5 text-sm font-medium text-[#c9d2dc] shadow-none hover:border-[#c9d2dc] hover:bg-[#c9d2dc] hover:text-[#06070B] focus-visible:border-[#c9d2dc] focus-visible:ring-[#c9d2dc]/40"
     >
