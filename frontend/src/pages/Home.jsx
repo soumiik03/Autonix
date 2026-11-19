@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Bot, LogOut, PanelsTopLeft, PlugZap, Sparkles } from "lucide-react";
 import {
   DropdownMenu,
@@ -19,6 +20,7 @@ const menuPanel =
 export const Home = () => {
   const [logoutLoading, setLogoutLoading] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const userData = useSelector((state) => state.user.userData);
   const displayName = userData?.name || "Your account";
   const avatarInitial = displayName.charAt(0).toUpperCase();
@@ -82,17 +84,26 @@ export const Home = () => {
               <PanelsTopLeft className="size-[18px]" strokeWidth={1.8} />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={`w-56 ${menuPanel}`}>
-              <DropdownMenuItem className="cursor-pointer rounded-xl bg-[#e7e9ed] px-3 py-3 text-[13px] font-medium tracking-[0.01em] text-[#17191e] focus:bg-[#e7e9ed] focus:text-[#17191e]">
+              <DropdownMenuItem
+                onClick={() => navigate("/agents")}
+                className="cursor-pointer rounded-xl bg-[#e7e9ed] px-3 py-3 text-[13px] font-medium tracking-[0.01em] text-[#17191e] focus:bg-[#e7e9ed] focus:text-[#17191e]"
+              >
                 <Bot className="size-4 text-[#4c5560]" strokeWidth={1.8} />
                 My Agents
               </DropdownMenuItem>
               <DropdownMenuSeparator className="my-1.5 bg-white/[0.08]" />
-              <DropdownMenuItem className="cursor-pointer rounded-lg px-3 py-2.5 text-[13px] font-medium tracking-[0.01em] text-[#cbd0d7] focus:bg-white/[0.07] focus:text-white">
+              <DropdownMenuItem
+                onClick={() => navigate("/agents/new")}
+                className="cursor-pointer rounded-lg px-3 py-2.5 text-[13px] font-medium tracking-[0.01em] text-[#cbd0d7] focus:bg-white/[0.07] focus:text-white"
+              >
                 <Sparkles className="size-4 text-[#9fa7b1]" strokeWidth={1.8} />
                 Create New Agent
               </DropdownMenuItem>
               <DropdownMenuSeparator className="my-1.5 bg-white/[0.08]" />
-              <DropdownMenuItem className="cursor-pointer rounded-lg px-3 py-2.5 text-[13px] font-medium tracking-[0.01em] text-[#cbd0d7] focus:bg-white/[0.07] focus:text-white">
+              <DropdownMenuItem
+                onClick={() => navigate("/integration")}
+                className="cursor-pointer rounded-lg px-3 py-2.5 text-[13px] font-medium tracking-[0.01em] text-[#cbd0d7] focus:bg-white/[0.07] focus:text-white"
+              >
                 <PlugZap className="size-4 text-[#9fa7b1]" strokeWidth={1.8} />
                 Integration
               </DropdownMenuItem>
