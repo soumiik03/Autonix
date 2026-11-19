@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Bot, LogOut, Plus, SlidersHorizontal, Workflow } from "lucide-react";
+import { Bot, LogOut, PanelsTopLeft, PlugZap, Sparkles } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,7 +36,7 @@ export const Home = () => {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#0b0c0f] text-[#e2e5e9]">
+    <main className="relative min-h-screen overflow-hidden bg-[#0b0c0f] font-sans text-[#e2e5e9] antialiased">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_-12%,rgba(190,198,208,0.12),transparent_58%)]"
@@ -79,21 +79,21 @@ export const Home = () => {
               aria-label="Open workspace menu"
               className="flex size-10 items-center justify-center rounded-xl border border-white/[0.09] bg-white/[0.045] text-[#d6dae0] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition hover:border-white/20 hover:bg-white/[0.09] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c5cbd3]/50"
             >
-              <Workflow className="size-[18px]" strokeWidth={1.8} />
+              <PanelsTopLeft className="size-[18px]" strokeWidth={1.8} />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={`w-56 ${menuPanel}`}>
-              <DropdownMenuItem className="cursor-pointer rounded-xl bg-[#e7e9ed] px-3 py-3 text-sm font-medium text-[#17191e] focus:bg-[#e7e9ed] focus:text-[#17191e]">
-                <Bot className="size-4 text-[#4c5560]" />
+              <DropdownMenuItem className="cursor-pointer rounded-xl bg-[#e7e9ed] px-3 py-3 text-[13px] font-medium tracking-[0.01em] text-[#17191e] focus:bg-[#e7e9ed] focus:text-[#17191e]">
+                <Bot className="size-4 text-[#4c5560]" strokeWidth={1.8} />
                 My Agents
               </DropdownMenuItem>
               <DropdownMenuSeparator className="my-1.5 bg-white/[0.08]" />
-              <DropdownMenuItem className="cursor-pointer rounded-lg px-3 py-2.5 text-sm text-[#cbd0d7] focus:bg-white/[0.07] focus:text-white">
-                <Plus className="size-4 text-[#9fa7b1]" />
+              <DropdownMenuItem className="cursor-pointer rounded-lg px-3 py-2.5 text-[13px] font-medium tracking-[0.01em] text-[#cbd0d7] focus:bg-white/[0.07] focus:text-white">
+                <Sparkles className="size-4 text-[#9fa7b1]" strokeWidth={1.8} />
                 Create New Agent
               </DropdownMenuItem>
               <DropdownMenuSeparator className="my-1.5 bg-white/[0.08]" />
-              <DropdownMenuItem className="cursor-pointer rounded-lg px-3 py-2.5 text-sm text-[#cbd0d7] focus:bg-white/[0.07] focus:text-white">
-                <SlidersHorizontal className="size-4 text-[#9fa7b1]" />
+              <DropdownMenuItem className="cursor-pointer rounded-lg px-3 py-2.5 text-[13px] font-medium tracking-[0.01em] text-[#cbd0d7] focus:bg-white/[0.07] focus:text-white">
+                <PlugZap className="size-4 text-[#9fa7b1]" strokeWidth={1.8} />
                 Integration
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -118,10 +118,10 @@ export const Home = () => {
             <DropdownMenuContent align="end" className={`w-64 ${menuPanel}`}>
               <DropdownMenuGroup>
                 <DropdownMenuLabel className="px-3 py-2.5">
-                  <span className="block truncate text-sm font-medium text-[#e8eaed]">
+                  <span className="block truncate text-[13px] font-semibold tracking-[0.01em] text-[#e8eaed]">
                     {displayName}
                   </span>
-                  <span className="mt-1 block truncate text-xs font-normal text-[#858c96]">
+                  <span className="mt-1 block truncate text-xs font-normal tracking-[0.01em] text-[#858c96]">
                     {userData?.email || "No email available"}
                   </span>
                 </DropdownMenuLabel>
@@ -131,7 +131,7 @@ export const Home = () => {
                 onClick={handleLogout}
                 disabled={logoutLoading}
                 variant="destructive"
-                className="cursor-pointer rounded-lg px-3 py-2.5 text-sm text-[#db8188] focus:bg-rose-500/10 focus:text-[#f19ba1]"
+                className="cursor-pointer rounded-lg px-3 py-2.5 text-[13px] font-medium tracking-[0.01em] text-[#db8188] focus:bg-rose-500/10 focus:text-[#f19ba1]"
               >
                 <LogOut className="size-4 text-[#db8188]" />
                 {logoutLoading ? "Signing out..." : "Log out"}
