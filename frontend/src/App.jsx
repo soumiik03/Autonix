@@ -3,9 +3,12 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Login from "./pages/Login";
 import { Home } from "./pages/Home";
+import { Agents } from "./pages/Agents";
+import { Integration } from "./pages/Integration";
+import { CreateAgent } from "./pages/CreateAgents";
 import { useDispatch } from "react-redux";
 import { me } from "./features/auth";
-import { setUserData } from "/redux/userSlice";
+import { setUserData } from "../redux/userSlice";
 import { useEffect } from "react";
 
 function App() {

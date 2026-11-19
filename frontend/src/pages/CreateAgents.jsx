@@ -1,7 +1,7 @@
 import React from 'react'
 
-export const createAgents = () => {
+export const CreateAgent = () => {
   return (
-    <div>createAgents</div>
+    <div>Create Agent</div>
   )
 }
