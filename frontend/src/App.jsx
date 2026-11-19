@@ -23,11 +23,15 @@ function App() {
     fetch();
   }, []);
   const {userData}=useSelector((state)=>state.user);
+  
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={userData ? <Navigate to={"/"} /> : <Login />} />
         <Route path="/" element={userData ? <Home /> : <Navigate to={"/login"} />} />
+        <Route path="/agents" element={userData ? <Agents /> : <Navigate to={"/login"} />} />
+        <Route path="/integration" element={userData ? <Integration/> : <Navigate to={"/login"} />} />
+        <Route path="/agents/new" element={userData ? <CreateAgent/> : <Navigate to={"/login"} />} />
       </Routes>
     </BrowserRouter>
   );
