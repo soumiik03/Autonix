@@ -12,6 +12,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { Checkbox } from "../components/ui/checkbox";
+import { Label } from "../components/ui/label";
 import { SiteHeader } from "../components/SiteHeader";
 import { createAgent } from "../features/agent";
 
@@ -85,7 +86,7 @@ export function CreateAgent() {
             </p>
             <div className="field-grid">
               <div className="field field-full">
-                <label htmlFor="agent-name">Agent name *</label>
+                <Label htmlFor="agent-name">Agent name *</Label>
                 <Input
                   id="agent-name"
                   value={name}
@@ -97,7 +98,7 @@ export function CreateAgent() {
                 />
               </div>
               <div className="field">
-                <label htmlFor="agent-instructions">Instructions *</label>
+                <Label htmlFor="agent-instructions">Instructions *</Label>
                 <Textarea
                   id="agent-instructions"
                   value={instructions}
@@ -110,7 +111,7 @@ export function CreateAgent() {
                 <span className="counter">{instructions.length} / 1500</span>
               </div>
               <div className="field">
-                <label htmlFor="agent-knowledge">Knowledge base *</label>
+                <Label htmlFor="agent-knowledge">Knowledge base *</Label>
                 <Textarea
                   id="agent-knowledge"
                   value={knowledgeBase}
@@ -131,13 +132,14 @@ export function CreateAgent() {
             </p>
             <div className="tool-grid">
               {availableTools.map(({ id, label, Icon }) => (
-                <label className="tool-option" key={id}>
+                <Label className="tool-option" htmlFor={id} key={id}>
                   <Checkbox
+                    id={id}
                     checked={tools.includes(id)}
                     onCheckedChange={() => toggleTool(id)}
                   />
                   <Icon size={16} /> {label}
-                </label>
+                </Label>
               ))}
             </div>
             {error && (
