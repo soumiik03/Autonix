@@ -12,9 +12,6 @@ button { cursor: pointer; } a { color: inherit; }
 .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: .2em; }
 .brand-mark { width: 27px; height: 27px; }
 .header-actions { display: flex; align-items: center; gap: 8px; }
-.icon-button, .avatar { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #d9d9d9; background: #fff; color: #171717; }
-.avatar { border-radius: 50%; overflow: hidden; font-size: 13px; }
-.avatar img { width: 100%; height: 100%; object-fit: cover; }
 .nav-link, .text-link { color: #171717; text-decoration: none; font-size: 15px; }
 .nav-link:hover, .text-link:hover { color: #000; }
 .nav-button { padding: 0; border: 0; background: transparent; }
@@ -28,8 +25,6 @@ h1 { margin-bottom: 16px; font-size: clamp(28px, 4vw, 44px); line-height: 1.12; 
 h2 { font-size: 22px; line-height: 1.38; font-weight: 700; letter-spacing: -.025em; }
 .lead { max-width: 650px; margin-bottom: 32px; color: #171717; font-size: 20px; line-height: 1.4; letter-spacing: -.025em; }
 .muted { color: #737373; } .body-copy { font-size: 18px; line-height: 1.33; letter-spacing: -.025em; } .small { font-size: 12px; line-height: 1.33; }
-.button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 24px; border: 1px solid #171717; border-radius: 9999px; background: #171717; color: #fff; font-size: 16px; font-weight: 600; line-height: 1.33; text-decoration: none; transition: background .15s, color .15s; }
-.button:hover { background: #fff; color: #171717; } .button-secondary { background: #fff; color: #171717; border-color: #d9d9d9; } .button-secondary:hover { background: #f5f5f5; } .button:disabled { opacity: .5; cursor: wait; }
 .section-rule { border-top: 1px solid #e5e5e5; }
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(280px, .7fr); gap: 64px; align-items: end; padding: 64px 0 96px; }
 .hero-actions { display: flex; align-items: center; gap: 24px; }
@@ -38,17 +33,16 @@ h2 { font-size: 22px; line-height: 1.38; font-weight: 700; letter-spacing: -.025
 .stat-value { display: block; margin-bottom: 6px; font-size: 30px; font-weight: 700; letter-spacing: -.04em; } .stat-label { color: #737373; font-size: 12px; }
 .list-toolbar { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 32px; }
 .agent-list { border-top: 1px solid #171717; } .agent-row { display: grid; grid-template-columns: 1fr 1.6fr auto; gap: 24px; align-items: center; padding: 24px 0; border-bottom: 1px solid #e5e5e5; }
-.agent-name { margin: 0 0 6px; font-size: 18px; font-weight: 700; } .agent-tools { display: flex; flex-wrap: wrap; gap: 6px; } .tag { padding: 5px 8px; border: 1px solid #d9d9d9; border-radius: 9999px; color: #737373; font-size: 12px; }
+.agent-name { margin: 0 0 6px; font-size: 18px; font-weight: 700; } .agent-tools { display: flex; flex-wrap: wrap; gap: 6px; }
 .empty-state { padding: 64px 0; border-bottom: 1px solid #e5e5e5; }
 .form-header { margin-bottom: 48px; } .form { border-top: 1px solid #171717; } .form-section { padding: 24px 0; border-bottom: 1px solid #e5e5e5; }
 .form-section-title { margin: 0 0 6px; font-size: 18px; font-weight: 700; } .form-section-description { margin-bottom: 24px; color: #737373; font-size: 14px; }
 .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; } .field { display: flex; flex-direction: column; gap: 8px; } .field-full { grid-column: 1 / -1; } .field label { font-size: 12px; color: #171717; }
-.field input, .field textarea { width: 100%; border: 1px solid #bdbdbd; border-radius: 12px; background: #fff; padding: 11px 12px; color: #000; outline: none; } .field input { height: 44px; } .field textarea { min-height: 116px; resize: vertical; }
-.field input:focus, .field textarea:focus { border-color: #000; box-shadow: 0 0 0 1px #000; } .counter { align-self: end; color: #737373; font-size: 12px; }
-.tool-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; } .tool-option { display: flex; align-items: center; gap: 10px; padding: 14px; border: 1px solid #d9d9d9; border-radius: 12px; color: #171717; font-size: 14px; } .tool-option:has(input:checked) { border-color: #171717; } .tool-option input { accent-color: #171717; }
+.counter { align-self: end; color: #737373; font-size: 12px; }
+.tool-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; } .tool-option { display: flex; align-items: center; gap: 10px; padding: 14px; border: 1px solid #d9d9d9; border-radius: 12px; color: #171717; font-size: 14px; }
 .form-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 24px; } .error { margin: 16px 0 0; color: #171717; font-size: 14px; }
 .integration-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: #e5e5e5; border: 1px solid #e5e5e5; } .integration-card { min-height: 220px; display: flex; flex-direction: column; justify-content: space-between; padding: 24px; background: #fff; } .integration-card h2 { margin-bottom: 8px; } .integration-card p { margin-bottom: 24px; color: #737373; font-size: 14px; line-height: 1.5; }
-.login-page { min-height: 100vh; display: grid; place-items: center; padding: 32px; } .login-wrap { width: 100%; max-width: 390px; } .login-brand { margin-bottom: 64px; } .login-heading { margin-bottom: 32px; } .login-heading h1 { font-size: 32px; font-weight: 700; margin-bottom: 10px; } .login-heading p { margin: 0; color: #737373; font-size: 14px; } .login-note { margin-top: 24px; color: #737373; font-size: 12px; line-height: 1.5; } .google-button { width: 100%; }
+.login-page { min-height: 100vh; display: grid; place-items: center; padding: 32px; } .login-wrap { width: 100%; max-width: 390px; } .login-brand { margin-bottom: 64px; } .login-heading { margin-bottom: 32px; } .login-heading h1 { font-size: 32px; font-weight: 700; margin-bottom: 10px; } .login-heading p { margin: 0; color: #737373; font-size: 14px; } .login-note { margin-top: 24px; color: #737373; font-size: 12px; line-height: 1.5; }
 @media (max-width: 700px) {
   .site-header { height: 64px; padding: 0 20px; } .page { padding: 40px 20px 64px; }
   .hero-grid { grid-template-columns: 1fr; gap: 40px; padding: 40px 0 64px; } .stat-grid, .field-grid, .tool-grid, .integration-grid { grid-template-columns: 1fr; }

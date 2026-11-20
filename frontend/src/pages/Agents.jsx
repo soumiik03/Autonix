@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Plus, Trash2 } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
 import { getAllAgents, deleteAgent } from "../features/agent";
 import { SiteHeader } from "../components/SiteHeader";
 
@@ -65,9 +66,9 @@ export function Agents() {
                   <p className="small muted mb-2.5">{agent.instructions}</p>
                   <div className="agent-tools">
                     {(agent.tools || []).map((tool) => (
-                      <span className="tag" key={tool}>
+                      <Badge key={tool} variant="outline" className="rounded-full border-black/20 px-2.5 py-1 font-normal">
                         {tool.replaceAll("_", " ")}
-                      </span>
+                      </Badge>
                     ))}
                   </div>
                 </div>
