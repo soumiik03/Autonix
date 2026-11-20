@@ -8,8 +8,12 @@ import {
   LoaderCircle,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { createAgent } from "../features/agent";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Textarea } from "../components/ui/textarea";
+import { Checkbox } from "../components/ui/checkbox";
 import { SiteHeader } from "../components/SiteHeader";
+import { createAgent } from "../features/agent";
 
 const availableTools = [
   { id: "web_search", label: "Web search", Icon: Globe2 },
@@ -65,15 +69,9 @@ export function CreateAgent() {
       <main className="page page-narrow">
         <div className="form-header">
           <Link className="text-link" to="/agents">
-            <ArrowLeft
-              size={14}
-              style={{ verticalAlign: "middle", marginRight: 5 }}
-            />{" "}
-            Back to agents
+            <ArrowLeft size={14} className="mr-1 inline" /> Back to agents
           </Link>
-          <p className="eyebrow" style={{ marginTop: 48 }}>
-            NEW AGENT
-          </p>
+          <p className="eyebrow mt-12">NEW AGENT</p>
           <h1>Create your agent</h1>
           <p className="muted body-copy">
             Set a purpose, instructions, and the tools it can use.
@@ -88,36 +86,39 @@ export function CreateAgent() {
             <div className="field-grid">
               <div className="field field-full">
                 <label htmlFor="agent-name">Agent name *</label>
-                <input
+                <Input
                   id="agent-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Research assistant"
                   maxLength={60}
                   required
+                  className="h-11 rounded-xl border-[#bdbdbd] shadow-none focus-visible:ring-1 focus-visible:ring-black"
                 />
               </div>
               <div className="field">
                 <label htmlFor="agent-instructions">Instructions *</label>
-                <textarea
+                <Textarea
                   id="agent-instructions"
                   value={instructions}
                   onChange={(e) => setInstructions(e.target.value)}
                   placeholder="Describe the agent's role and how it should respond..."
                   maxLength={1500}
                   required
+                  className="min-h-[116px] rounded-xl border-[#bdbdbd] shadow-none focus-visible:ring-1 focus-visible:ring-black"
                 />
                 <span className="counter">{instructions.length} / 1500</span>
               </div>
               <div className="field">
                 <label htmlFor="agent-knowledge">Knowledge base *</label>
-                <textarea
+                <Textarea
                   id="agent-knowledge"
                   value={knowledgeBase}
                   onChange={(e) => setKnowledgeBase(e.target.value)}
                   placeholder="Add context or reference material..."
                   maxLength={3000}
                   required
+                  className="min-h-[116px] rounded-xl border-[#bdbdbd] shadow-none focus-visible:ring-1 focus-visible:ring-black"
                 />
                 <span className="counter">{knowledgeBase.length} / 3000</span>
               </div>
@@ -131,10 +132,9 @@ export function CreateAgent() {
             <div className="tool-grid">
               {availableTools.map(({ id, label, Icon }) => (
                 <label className="tool-option" key={id}>
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={tools.includes(id)}
-                    onChange={() => toggleTool(id)}
+                    onCheckedChange={() => toggleTool(id)}
                   />
                   <Icon size={16} /> {label}
                 </label>
@@ -148,7 +148,11 @@ export function CreateAgent() {
           </section>
           <div className="form-footer">
             <span className="small muted">All fields are required.</span>
-            <button className="button" type="submit" disabled={loading}>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="rounded-full bg-[#171717] px-6 text-white hover:bg-black"
+            >
               {loading ? (
                 <>
                   <LoaderCircle size={16} className="animate-spin" />{" "}
@@ -159,7 +163,7 @@ export function CreateAgent() {
                   Create agent <ArrowRight size={16} />
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </form>
       </main>

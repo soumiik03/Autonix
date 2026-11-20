@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Plus, Trash2 } from "lucide-react";
+import { Button } from "../components/ui/button";
 import { getAllAgents, deleteAgent } from "../features/agent";
 import { SiteHeader } from "../components/SiteHeader";
 
 export function Agents() {
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const loadAgents = () =>
+  const navigate = useNavigate();
+  useEffect(() => {
     getAllAgents()
       .then((data) => setAgents(data?.agents || []))
       .finally(() => setLoading(false));
-  useEffect(() => {
-    loadAgents();
   }, []);
   const remove = async (id) => {
     if (!window.confirm("Delete this agent?")) return;
@@ -31,9 +31,12 @@ export function Agents() {
               Your focused AI workers, all in one place.
             </p>
           </div>
-          <Link className="button" to="/agents/new">
+          <Button
+            className="rounded-full bg-[#171717] px-6 text-white hover:bg-black"
+            onClick={() => navigate("/agents/new")}
+          >
             <Plus size={16} /> New agent
-          </Link>
+          </Button>
         </div>
         {loading ? (
           <p className="muted small">Loading agents...</p>
@@ -45,7 +48,7 @@ export function Agents() {
             </p>
             <Link className="text-link" to="/agents/new">
               Create an agent{" "}
-              <ArrowRight size={14} style={{ verticalAlign: "middle" }} />
+              <ArrowRight size={14} className="inline align-middle" />
             </Link>
           </div>
         ) : (
@@ -59,9 +62,7 @@ export function Agents() {
                   </p>
                 </div>
                 <div>
-                  <p className="small muted" style={{ marginBottom: 10 }}>
-                    {agent.instructions}
-                  </p>
+                  <p className="small muted mb-2.5">{agent.instructions}</p>
                   <div className="agent-tools">
                     {(agent.tools || []).map((tool) => (
                       <span className="tag" key={tool}>
@@ -70,13 +71,13 @@ export function Agents() {
                     ))}
                   </div>
                 </div>
-                <button
-                  className="button button-secondary"
+                <Button
+                  variant="outline"
+                  className="rounded-full border-[#d9d9d9]"
                   onClick={() => remove(agent._id)}
-                  aria-label={"Delete " + agent.name}
                 >
                   <Trash2 size={15} /> Delete
-                </button>
+                </Button>
               </article>
             ))}
           </div>

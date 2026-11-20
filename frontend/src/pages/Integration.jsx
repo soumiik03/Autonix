@@ -1,28 +1,29 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Check, ExternalLink } from "lucide-react";
+import { Card, CardContent } from "../components/ui/card";
 import { SiteHeader } from "../components/SiteHeader";
 
 const integrations = [
-  {
-    name: "Google",
-    description: "Use your Google account to securely sign in to Autonix.",
-    status: "Connected",
-  },
-  {
-    name: "Webhooks",
-    description: "Connect agents to the tools and workflows you already use.",
-    status: "Coming soon",
-  },
-  {
-    name: "API access",
-    description: "Bring your agents into your own applications and services.",
-    status: "Coming soon",
-  },
-  {
-    name: "Knowledge sources",
-    description: "Give agents useful context from your existing information.",
-    status: "Coming soon",
-  },
+  [
+    "Google",
+    "Use your Google account to securely sign in to Autonix.",
+    "Connected",
+  ],
+  [
+    "Webhooks",
+    "Connect agents to the tools and workflows you already use.",
+    "Coming soon",
+  ],
+  [
+    "API access",
+    "Bring your agents into your own applications and services.",
+    "Coming soon",
+  ],
+  [
+    "Knowledge sources",
+    "Give agents useful context from your existing information.",
+    "Coming soon",
+  ],
 ];
 
 export function Integration() {
@@ -36,41 +37,36 @@ export function Integration() {
           Connect Autonix to the services that make your agents more useful.
         </p>
         <div className="integration-grid">
-          {integrations.map((item) => (
-            <article className="integration-card" key={item.name}>
-              <div>
-                <h2>{item.name}</h2>
-                <p>{item.description}</p>
-              </div>
-              <span className="small muted">
-                {item.status === "Connected" ? (
-                  <>
-                    <Check
-                      size={14}
-                      style={{ verticalAlign: "middle", marginRight: 5 }}
-                    />{" "}
-                    {item.status}
-                  </>
-                ) : (
-                  item.status
-                )}{" "}
-                {item.status !== "Connected" && (
-                  <ExternalLink
-                    size={13}
-                    style={{ verticalAlign: "middle", marginLeft: 5 }}
-                  />
-                )}
-              </span>
-            </article>
+          {integrations.map(([name, description, status]) => (
+            <Card
+              className="integration-card rounded-none border-0 shadow-none"
+              key={name}
+            >
+              <CardContent className="flex h-full flex-col justify-between p-6">
+                <div>
+                  <h2>{name}</h2>
+                  <p>{description}</p>
+                </div>
+                <span className="small muted">
+                  {status === "Connected" ? (
+                    <>
+                      <Check size={14} className="mr-1 inline" />
+                      {status}
+                    </>
+                  ) : (
+                    <>
+                      {status}{" "}
+                      <ExternalLink size={13} className="ml-1 inline" />
+                    </>
+                  )}
+                </span>
+              </CardContent>
+            </Card>
           ))}
         </div>
-        <p style={{ marginTop: 32 }}>
+        <p className="mt-8">
           <Link className="text-link" to="/">
-            <ArrowLeft
-              size={14}
-              style={{ verticalAlign: "middle", marginRight: 5 }}
-            />{" "}
-            Back to home
+            <ArrowLeft size={14} className="mr-1 inline" /> Back to home
           </Link>
         </p>
       </main>
