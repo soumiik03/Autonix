@@ -23,6 +23,8 @@ export function Agents() {
     }
   }
   useEffect(() => {
+    // Fetching remote data is the intended synchronization for this effect.
+    // eslint-disable-next-line react/set-state-in-effect
     fetchAgents();
   }, []);
   const filteredAgents = agents.filter((agent) =>{
