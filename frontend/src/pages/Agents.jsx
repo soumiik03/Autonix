@@ -10,6 +10,7 @@ export function Agents() {
   const [agents, setAgents] = useState([]);
   const [search,setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+
   const fetchAgents = async () => {
     setLoading(true);
     try {
@@ -22,11 +23,11 @@ export function Agents() {
       setLoading(false);
     }
   }
+
   useEffect(() => {
-    // Fetching remote data is the intended synchronization for this effect.
-    // eslint-disable-next-line react/set-state-in-effect
     fetchAgents();
   }, []);
+
   const filteredAgents = agents.filter((agent) =>{
     return(
       agent?.name?.toLowerCase()?.includes(search.toLowerCase()) ||
@@ -34,6 +35,7 @@ export function Agents() {
       agent?.knowledgeBase?.toLowerCase()?.includes(search.toLowerCase()) 
     )
   });
+  
   const handleDelete = async (agentId) => {
     try {
       await deleteAgent(agentId);

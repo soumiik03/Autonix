@@ -30,31 +30,48 @@ export function CreateAgent() {
   const [tools, setTools] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const toggleTool = (tool) =>
-    setTools((prevTools) => {
-      if (prevTools.includes(tool)) {
-        return prevTools.filter((t) => t !== tool.id);
-      } else {
-        return [...prevTools, tool];
-      }
-    });
+
+  const toggleTool = (toolId) =>
+    setTools((prevTools) =>
+      prevTools.includes(toolId)
+        ? prevTools.filter((id) => id !== toolId)
+        : [...prevTools, toolId],
+    );
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
+    if (!name.trim() || !instructions.trim() || !knowledgeBase.trim()) {
+      setError("Complete each required field before creating your agent.");
+      return;
+    }
+
+    if (!tools.length) {
+      setError("Choose at least one capability for your agent.");
+      return;
+    }
+
     setLoading(true);
     try {
-      const data = await createAgent({
-        name,
-        instructions,
-        knowledgeBase,
+      await createAgent({
+        name: name.trim(),
+        instructions: instructions.trim(),
+        knowledgeBase: knowledgeBase.trim(),
         tools,
       });
-      console.log(data);
-      setLoading(false);
+      navigate("/agents");
     } catch (err) {
-      console.error(err);
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Your agent could not be created.",
+      );
+    } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="app-shell">
       <SiteHeader />
