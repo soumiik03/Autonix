@@ -1,52 +1,31 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { me } from "./features/auth";
+import { setUserData } from "../redux/userSlice";
 import Login from "./pages/Login";
 import { Home } from "./pages/Home";
 import { Agents } from "./pages/Agents";
 import { Integration } from "./pages/Integration";
 import { CreateAgent } from "./pages/CreateAgents";
-import { useDispatch } from "react-redux";
-import { me } from "./features/auth";
-import { setUserData } from "../redux/userSlice";
-import { useEffect, useState } from "react";
+import "./App.css";
 
 function App() {
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   const [authLoading, setAuthLoading] = useState(true);
-
+  const userData = useSelector((state) => state.user.userData);
   useEffect(() => {
-    const fetch=async () => {
-      try {
-        const data=await me();
-        console.log(data);
-        dispatch(setUserData(data));
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setAuthLoading(false);
-      }
-    };
-    fetch();
+    me().then((data) => dispatch(setUserData(data || null))).catch(() => dispatch(setUserData(null))).finally(() => setAuthLoading(false));
   }, [dispatch]);
-  const {userData}=useSelector((state)=>state.user);
-  const loadingPage = (
-    <main className="flex min-h-screen items-center justify-center bg-[#0b0c0f] font-sans text-sm text-[#aeb5bf]">
-      Restoring your workspace...
-    </main>
-  );
-
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={authLoading ? loadingPage : userData ? <Navigate to={"/"} /> : <Login />} />
-        <Route path="/" element={authLoading ? loadingPage : userData ? <Home /> : <Navigate to={"/login"} />} />
-        <Route path="/agents" element={authLoading ? loadingPage : userData ? <Agents /> : <Navigate to={"/login"} />} />
-        <Route path="/integration" element={authLoading ? loadingPage : userData ? <Integration/> : <Navigate to={"/login"} />} />
-        <Route path="/agents/new" element={authLoading ? loadingPage : userData ? <CreateAgent/> : <Navigate to={"/login"} />} />
-      </Routes>
-    </BrowserRouter>
-  );
+  if (authLoading) return <main className="login-page"><p className="muted small">Restoring your workspace...</p></main>;
+  const protectedPage = (element) => userData ? element : <Navigate to="/login" replace />;
+  return <BrowserRouter><Routes>
+    <Route path="/login" element={userData ? <Navigate to="/" replace /> : <Login />} />
+    <Route path="/" element={protectedPage(<Home />)} />
+    <Route path="/agents" element={protectedPage(<Agents />)} />
+    <Route path="/agents/new" element={protectedPage(<CreateAgent />)} />
+    <Route path="/integration" element={protectedPage(<Integration />)} />
+    <Route path="*" element={<Navigate to="/" replace />} />
+  </Routes></BrowserRouter>;
 }
-
 export default App;
