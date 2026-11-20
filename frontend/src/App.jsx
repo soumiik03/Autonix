@@ -9,10 +9,12 @@ import { CreateAgent } from "./pages/CreateAgents";
 import { useDispatch } from "react-redux";
 import { me } from "./features/auth";
 import { setUserData } from "../redux/userSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
   const dispatch=useDispatch();
+  const [authLoading, setAuthLoading] = useState(true);
+
   useEffect(() => {
     const fetch=async () => {
       try {
@@ -21,20 +23,27 @@ function App() {
         dispatch(setUserData(data));
       } catch (error) {
         console.error(error);
+      } finally {
+        setAuthLoading(false);
       }
     };
     fetch();
-  }, []);
+  }, [dispatch]);
   const {userData}=useSelector((state)=>state.user);
-  
+  const loadingPage = (
+    <main className="flex min-h-screen items-center justify-center bg-[#0b0c0f] font-sans text-sm text-[#aeb5bf]">
+      Restoring your workspace...
+    </main>
+  );
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={userData ? <Navigate to={"/"} /> : <Login />} />
-        <Route path="/" element={userData ? <Home /> : <Navigate to={"/login"} />} />
-        <Route path="/agents" element={userData ? <Agents /> : <Navigate to={"/login"} />} />
-        <Route path="/integration" element={userData ? <Integration/> : <Navigate to={"/login"} />} />
-        <Route path="/agents/new" element={userData ? <CreateAgent/> : <Navigate to={"/login"} />} />
+        <Route path="/login" element={authLoading ? loadingPage : userData ? <Navigate to={"/"} /> : <Login />} />
+        <Route path="/" element={authLoading ? loadingPage : userData ? <Home /> : <Navigate to={"/login"} />} />
+        <Route path="/agents" element={authLoading ? loadingPage : userData ? <Agents /> : <Navigate to={"/login"} />} />
+        <Route path="/integration" element={authLoading ? loadingPage : userData ? <Integration/> : <Navigate to={"/login"} />} />
+        <Route path="/agents/new" element={authLoading ? loadingPage : userData ? <CreateAgent/> : <Navigate to={"/login"} />} />
       </Routes>
     </BrowserRouter>
   );
