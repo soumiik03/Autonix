@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-const tools = [
+const availableTools = [
   { id: "web_search", label: "Web search", Icon: Globe2 },
   { id: "file_analysis", label: "File analysis", Icon: FileSearch2 },
   { id: "code_execution", label: "Code execution", Icon: Code2 },
@@ -34,47 +34,53 @@ export const CreateAgent = () => {
   const [name, setName] = useState("");
   const [instructions, setInstructions] = useState("");
   const [knowledgeBase, setKnowledgeBase] = useState("");
-  const [selectedTools, setSelectedTools] = useState([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [tools, setTools] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const toggleTool = (toolId, checked) => {
-    setSelectedTools((current) =>
-      checked ? [...current, toolId] : current.filter((tool) => tool !== toolId),
-    );
+  const toggleTool = (tool) => {
+    setTools((prevTools) => {
+      if (prevTools?.includes(tool)) {
+        return prevTools.filter((item) => item !== tool);
+      }
+
+      return [...prevTools, tool];
+    });
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setErrorMessage("");
+    setError("");
 
     if (!name.trim() || !instructions.trim() || !knowledgeBase.trim()) {
-      setErrorMessage("Complete each required field before creating your agent.");
+      setError(
+        "Complete each required field before creating your agent.",
+      );
       return;
     }
 
-    if (!selectedTools.length) {
-      setErrorMessage("Choose at least one capability for your agent.");
+    if (!tools.length) {
+      setError("Choose at least one capability for your agent.");
       return;
     }
 
-    setIsSubmitting(true);
+    setLoading(true);
     try {
       await createAgent({
         name: name.trim(),
         instructions: instructions.trim(),
         knowledgeBase: knowledgeBase.trim(),
-        tools: selectedTools,
+        tools,
       });
       navigate("/agents");
     } catch (error) {
-      setErrorMessage(
+      setError(
         error.response?.data?.message ||
           error.message ||
           "Your agent could not be created. Please try again.",
       );
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
@@ -141,7 +147,10 @@ export const CreateAgent = () => {
             <CardContent className="flex flex-col gap-4 p-4 sm:gap-5 sm:p-5">
               <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2 sm:gap-y-4">
                 <div className="flex min-w-0 flex-col gap-1.5 sm:col-span-2">
-                  <Label htmlFor="agent-name" className="text-xs text-[#c9ced5]">
+                  <Label
+                    htmlFor="agent-name"
+                    className="text-xs text-[#c9ced5]"
+                  >
                     Agent name *
                   </Label>
                   <Input
@@ -203,14 +212,21 @@ export const CreateAgent = () => {
                   Capabilities *
                 </legend>
                 <div className="mt-2 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-12">
-                  {tools.map(({ id, label, Icon }) => (
-                    <div className="flex min-w-0 items-center justify-center gap-2 text-xs text-[#cbd0d7]" key={id}>
-                      <Icon size={16} className="text-[#9299a3]" aria-hidden="true" />
+                  {availableTools.map(({ id, label, Icon }) => (
+                    <div
+                      className="flex min-w-0 items-center justify-center gap-2 text-xs text-[#cbd0d7]"
+                      key={id}
+                    >
+                      <Icon
+                        size={16}
+                        className="text-[#9299a3]"
+                        aria-hidden="true"
+                      />
                       <span>{label}</span>
                       <Checkbox
                         className="rounded-sm border-[#555d67] bg-[#080a0d] data-checked:border-[#cbd1d9] data-checked:bg-[#cbd1d9] data-checked:text-[#08090b] focus-visible:ring-0"
-                        checked={selectedTools.includes(id)}
-                        onCheckedChange={(checked) => toggleTool(id, checked)}
+                        checked={tools.includes(id)}
+                        onCheckedChange={() => toggleTool(id)}
                         aria-label={label}
                       />
                     </div>
@@ -218,19 +234,19 @@ export const CreateAgent = () => {
                 </div>
               </fieldset>
 
-              {errorMessage && (
+              {error && (
                 <p className="m-0 text-xs text-[#c4c9d0]" role="alert">
-                  {errorMessage}
+                  {error}
                 </p>
               )}
 
               <CardFooter className="justify-end rounded-none border-t border-[#2a3038] bg-transparent px-0 py-3">
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={loading}
                   className="rounded-md bg-[#d3d7dd] text-[#08090b] hover:bg-[#e2e5e9] focus-visible:ring-0"
                 >
-                  {isSubmitting ? (
+                  {loading ? (
                     <>
                       <LoaderCircle className="animate-spin" />
                       Creating...
