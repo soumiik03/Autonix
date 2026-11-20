@@ -20,16 +20,16 @@ export function SiteHeader() {
         <Brand /> AUTONIX
       </Link>
       <nav className="header-actions gap-6 sm:gap-8" aria-label="Main navigation">
-        <Link className="nav-link whitespace-nowrap text-[15px] font-medium transition-all duration-200 hover:-translate-y-0.5 hover:!text-[#737373]" to="/agents">
+        <Link className="nav-link whitespace-nowrap text-[15px] font-medium" to="/agents">
           Agents
         </Link>
-        <Link className="nav-link whitespace-nowrap text-[15px] font-medium transition-all duration-200 hover:-translate-y-0.5 hover:!text-[#737373]" to="/integration">
+        <Link className="nav-link whitespace-nowrap text-[15px] font-medium" to="/integration">
           Integrations
         </Link>
         <span className="nav-divider mx-1" aria-hidden="true" />
         <Button
           variant="ghost"
-          className="nav-link nav-button h-auto px-0 py-0 text-[15px] font-medium whitespace-nowrap transition-all duration-200 hover:-translate-y-0.5 hover:!bg-transparent hover:!text-[#737373]"
+          className="nav-link nav-button h-auto px-0 !pb-[6px] text-[15px] font-medium whitespace-nowrap hover:!bg-transparent"
           onClick={signOut}
         >
           Sign out
