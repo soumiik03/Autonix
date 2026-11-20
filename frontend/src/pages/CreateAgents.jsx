@@ -199,12 +199,12 @@ export const CreateAgent = () => {
               </div>
 
               <fieldset className="border-0 border-t border-solid border-[#2a3038] p-0 pt-3">
-                <legend className="px-0 text-xs text-[#c9ced5]">
+                <legend className="mx-auto px-2 text-xs text-[#c9ced5]">
                   Capabilities *
                 </legend>
-                <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-4">
+                <div className="mt-2 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-12">
                   {tools.map(({ id, label, Icon }) => (
-                    <div className="flex min-w-0 items-center gap-2 text-xs text-[#cbd0d7]" key={id}>
+                    <div className="flex min-w-0 items-center justify-center gap-2 text-xs text-[#cbd0d7]" key={id}>
                       <Icon size={16} className="text-[#9299a3]" aria-hidden="true" />
                       <span>{label}</span>
                       <Checkbox
