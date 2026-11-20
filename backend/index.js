@@ -18,7 +18,10 @@ app.use(cors({
     credentials:true
 }))
 app.use(cookieParser())
+
 app.use("/api/auth",authRouter)
+app.use("/api/agent",agentRouter)
+
 
 app.listen(port,()=>{
     connectDb()
