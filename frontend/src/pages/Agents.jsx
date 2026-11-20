@@ -8,18 +8,39 @@ import { SiteHeader } from "../components/SiteHeader";
 
 export function Agents() {
   const [agents, setAgents] = useState([]);
+  const [search,setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const fetchAgents = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllAgents();
+      setAgents(data);
+      setLoading(false);
+       
+    } catch (error) {
+      console.error("Error fetching agents:", error);
+    } 
+  }  
   useEffect(() => {
-    getAllAgents()
-      .then((data) => setAgents(data?.agents || []))
-      .finally(() => setLoading(false));
+    fetchAgents();
   }, []);
-  const remove = async (id) => {
-    if (!window.confirm("Delete this agent?")) return;
-    await deleteAgent(id);
-    setAgents((items) => items.filter((agent) => agent._id !== id));
-  };
+  const filteredAgents = agents.filter((agent) =>{
+    const query=search.toLowerCase();
+    return(
+      agent?.name?.toLowerCase()?.includes(search.toLowerCase()) ||
+      agent?.instructions?.toLowerCase()?.includes(search.toLowerCase()) ||
+      agent?.knowledgeBase?.toLowerCase()?.includes(search.toLowerCase()) 
+    )
+  });
+  const handleDelete = async (agentId) => {
+    try {
+      await deleteAgent(agentId);
+      setAgents((prevAgents) => prevAgents.filter((agent) => agent._id !== agentId));
+    } catch (error) {
+      console.error("Error deleting agent:", error);
+    }
+  }
+  
   return (
     <div className="app-shell">
       <SiteHeader />
