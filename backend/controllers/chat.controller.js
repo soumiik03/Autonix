@@ -4,7 +4,7 @@ import { HumanMessage } from "langchain/schema";
 export const chat=async (req, res)=>{
     try{
         const { messages } = req.body;
-        if(!messages || !threadId){
+        if(!messages){
             return res.status(400).json({error:"Missing required fields"})
         }
         const threadId=req.user._id;
