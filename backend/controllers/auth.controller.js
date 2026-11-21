@@ -13,7 +13,7 @@ export const  login=async(req,res)=>{
             })
         }
         const decoded=await getAuth(app).verifyIdToken(firebaseToken);
-
+        //if the user exists update the user else create a new user
         const user=await User.findOneAndUpdate(
             {firebaseUid:decoded.uid},
             {
@@ -30,7 +30,7 @@ export const  login=async(req,res)=>{
                 upsert:true,
                 returnDocument:"after"
             }
-        )   
+        )     
         const token= jwt.sign({userId:user._id},process.env.JWT_SECRET,{expiresIn:"7d"})
 
         res.cookie("token",token,{
