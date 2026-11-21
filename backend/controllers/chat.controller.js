@@ -1,5 +1,5 @@
 import chatGraph from "../utils/chatGraph.js";
-import { HumanMessage } from "langchain/schema";
+import { HumanMessage } from "@langchain/core/messages";
 
 export const chat=async (req, res)=>{
     try{

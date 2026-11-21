@@ -7,7 +7,7 @@ export default function Login() {
     <main className="flex min-h-screen flex-col items-center justify-center bg-white px-6 py-10 sm:px-8">
       <div className="mb-6 flex flex-col items-center">
         <div className="brand mb-4"><Brand /> AUTONIX</div>
-        <h1 className="m-0 text-center text-[28px] font-medium leading-[1.2] tracking-[-0.035em]">Welcome to Autonix</h1>
+        <h1 className="m-0 text-center text-[28px] font-medium leading-[1.2] tracking-[-0.035em]">Build your workspace</h1>
       </div>
       <Card className="w-full max-w-[550px] rounded-[28px] border border-[#d9d9d9] bg-white p-0 shadow-none ring-0">
         <CardContent className="p-8 sm:p-14">

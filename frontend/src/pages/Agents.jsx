@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, Plus, Search, Trash2 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { getAllAgents, deleteAgent } from "../features/agent";
@@ -66,8 +66,8 @@ export function Agents() {
         </div>
 
         <div className="mb-8 flex flex-col gap-4 border-y border-[#e5e5e5] py-4 sm:flex-row sm:items-center sm:justify-between">
-          <label className="flex h-11 w-full items-center gap-3 rounded-[12px] border border-[#d9d9d9] px-3 text-[#737373] transition-colors duration-200 focus-within:border-[#171717] sm:max-w-[420px]">
-            <span aria-hidden="true">⌕</span>
+          <label className="agent-search flex h-11 w-full items-center gap-3 sm:max-w-[420px]">
+            <Search size={16} aria-hidden="true" />
             <input
               className="w-full bg-transparent text-[15px] text-[#171717] outline-none placeholder:text-[#737373]"
               placeholder="Search agents..."

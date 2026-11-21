@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth";
@@ -9,6 +10,7 @@ export function SiteHeader() {
   const user = useSelector((state) => state.user.userData);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [avatarError, setAvatarError] = useState(false);
   const signOut = async () => {
     await logout();
     dispatch(setUserData(null));
@@ -34,8 +36,12 @@ export function SiteHeader() {
         >
           Sign out
         </Button>
-        {user?.profilePicture && (
-          <img className="nav-avatar" src={user.profilePicture} alt="" />
+        {user?.profilePicture && !avatarError ? (
+          <img className="nav-avatar" src={user.profilePicture} alt="" onError={() => setAvatarError(true)} />
+        ) : (
+          <span className="nav-avatar nav-avatar-fallback" aria-label={user?.name || "Account"}>
+            {(user?.name || user?.email || "A").slice(0, 1).toUpperCase()}
+          </span>
         )}
       </nav>
     </header>

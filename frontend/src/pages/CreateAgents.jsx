@@ -85,7 +85,7 @@ export function CreateAgent() {
           </Link>
 
           <h1 className="mb-4 text-[32px] font-medium leading-[1.18] tracking-[-0.035em]">
-            Create your agent
+            New agent
           </h1>
           <p className="text-[18px] leading-[1.33] tracking-[-0.025em] text-[#737373]">
             Set a purpose, instructions, and the tools it can use.

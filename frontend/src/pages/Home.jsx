@@ -1,12 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { useSelector } from "react-redux";
 import { Button } from "../components/ui/button";
 import { SiteHeader } from "../components/SiteHeader";
 
 export function Home() {
-  const name =
-    useSelector((state) => state.user.userData?.name)?.split(" ")[0] || "there";
   const navigate = useNavigate();
 
   return (
@@ -16,7 +13,7 @@ export function Home() {
         <section className="home-hero">
           <p className="home-eyebrow">YOUR WORKSPACE</p>
           <h1>
-            Make AI work for you, {name}.
+            Focused agents for the work that repeats
           </h1>
           <p className="home-lead">
             Create focused agents that turn repeatable work into something simple, fast, and yours.
@@ -41,7 +38,7 @@ export function Home() {
           </div>
           <div>
             <span className="home-stat-value">∞</span>
-            <span className="home-stat-label">Ideas to automate</span>
+            <span className="home-stat-label">Workflows to shape</span>
           </div>
           <div>
             <span className="home-stat-value">24/7</span>
