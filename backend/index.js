@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRouter from "./routes/auth.route.js";
 import agentRouter from "./routes/agent.routes.js";
-
+import chatRouter from "./routes/chat.routes.js";
 
 dotenv.config();
 
@@ -22,7 +22,7 @@ app.use(cookieParser())
 
 app.use("/api/auth",authRouter)
 app.use("/api/agent",agentRouter)
-
+app.use("/api/chat",chatRouter)
 
 app.listen(port,()=>{
     connectDb()
