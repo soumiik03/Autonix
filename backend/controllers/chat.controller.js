@@ -7,12 +7,12 @@ export const chat=async (req, res)=>{
         if(!messages){
             return res.status(400).json({error:"Missing required fields"})
         }
-        const threadId=req.user._id;
+        const threadId=(req.user._id).toString();
         const data=await chatGraph.invoke({
             messages:[
                 new HumanMessage(messages),
             ]
-        },{configurable:{threadId}})
+        },{configurable:{thread_id:threadId}});
 
         const lastMessage=data.messages[data.messages.length-1].content;
         return res.status(200).json(lastMessage);
