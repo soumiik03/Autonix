@@ -28,6 +28,9 @@ export function Home() {
             <Link className="home-secondary-link" to="/agents">
               View agents
             </Link>
+            <Link className="home-chat-link" to="/chat">
+              Open workspace
+            </Link>
           </div>
         </section>
 

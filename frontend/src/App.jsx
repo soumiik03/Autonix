@@ -8,6 +8,7 @@ import { Home } from "./pages/Home";
 import { Agents } from "./pages/Agents";
 import { Integration } from "./pages/Integration";
 import { CreateAgent } from "./pages/CreateAgents";
+import { Chat } from "./pages/Chat";
 import "./App.css";
 
 function ProtectedRoute({ children, isAuthenticated }) {
@@ -75,6 +76,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/chat" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Chat /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
