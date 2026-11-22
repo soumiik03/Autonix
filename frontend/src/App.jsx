@@ -34,7 +34,6 @@ function App() {
       </main>
     );
   }
-
   const isAuthenticated = Boolean(userData);
 
   return (

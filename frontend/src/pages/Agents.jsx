@@ -1,31 +1,35 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { ArrowRight, Plus, Search, Trash2 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { getAllAgents, deleteAgent } from "../features/agent";
+import { setAgents, setAgentsLoading, setDelete } from "../../redux/agentSlice";
 import { SiteHeader } from "../components/SiteHeader";
 
 export function Agents() {
-  const [agents, setAgents] = useState([]);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { agents, agentsLoading: loading } = useSelector((state) => state.agent);
 
   useEffect(() => {
     async function loadAgents() {
+      dispatch(setAgentsLoading(true));
+
       try {
         const data = await getAllAgents();
-        setAgents(data?.agents || []);
+        dispatch(setAgents(data));
       } catch (error) {
         console.error("Error fetching agents:", error);
-        setAgents([]);
+        dispatch(setAgents([]));
       } finally {
-        setLoading(false);
+        dispatch(setAgentsLoading(false));
       }
     }
 
     loadAgents();
-  }, []);
+  }, [dispatch]);
 
   const searchText = search.toLowerCase();
   const filteredAgents = agents.filter((agent) => {
@@ -44,14 +48,11 @@ export function Agents() {
   const handleDelete = async (agentId) => {
     try {
       await deleteAgent(agentId);
-      setAgents((currentAgents) =>
-        currentAgents.filter((agent) => agent._id !== agentId),
-      );
+      dispatch(setDelete(agentId));
     } catch (error) {
       console.error("Error deleting agent:", error);
     }
   };
-  
   return (
     <div className="app-shell">
       <SiteHeader />
