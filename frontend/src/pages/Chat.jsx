@@ -27,7 +27,8 @@ export function Chat() {
   const conversationId = useRef(crypto.randomUUID());
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { agents, selectedAgent, agentsLoading } = useSelector((state) => state.agent);
+  const { agents, selectedAgent: savedAgent, agentsLoading } = useSelector((state) => state.agent);
+  const selectedAgent = agents.some((agent) => agent.name === savedAgent) ? savedAgent : "";
   const activeAgentName = selectedAgent || "Autonix";
   const suggestions = ["Plan my workday", "Create an agent", "Review an idea"];
 
@@ -49,14 +50,6 @@ export function Chat() {
 
     loadAgents();
   }, [agents.length, dispatch]);
-
-  useEffect(() => {
-    const selectedAgentExists = agents.some((agent) => agent.name === selectedAgent);
-
-    if (selectedAgent && agents.length > 0 && !selectedAgentExists) {
-      dispatch(setSelectedAgent(""));
-    }
-  }, [agents, dispatch, selectedAgent]);
 
   useEffect(() => {
     const thread = threadRef.current;

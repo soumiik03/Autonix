@@ -1,30 +1,20 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { Button } from "../components/ui/button";
 import { SiteHeader } from "../components/SiteHeader";
 
 export function Home() {
-  const navigate = useNavigate();
-
   return (
     <div className="app-shell">
       <SiteHeader />
       <main className="home-main">
         <section className="home-hero">
           <p className="home-eyebrow">YOUR WORKSPACE</p>
-          <h1>
-            Focused agents for the work that repeats
-          </h1>
-          <p className="home-lead">
-            Create focused agents that turn repeatable work into something simple, fast, and yours.
-          </p>
+          <h1>Focused agents for the work that repeats</h1>
+          <p className="home-lead">Create focused agents that turn repeatable work into something simple, fast, and yours.</p>
           <div className="home-actions">
-            <Button
-              className="h-11 rounded-full bg-[#171717] px-6 text-[18px] font-normal leading-[1.33] tracking-[-0.025em] text-white transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-black hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] active:translate-y-0 focus-visible:ring-2 focus-visible:ring-[#171717] focus-visible:ring-offset-2"
-              onClick={() => navigate("/agents/new")}
-            >
+            <Link className="home-primary-button" to="/agents/new">
               Create an agent <ArrowRight size={16} />
-            </Button>
+            </Link>
             <Link className="home-secondary-link" to="/agents">
               View agents
             </Link>

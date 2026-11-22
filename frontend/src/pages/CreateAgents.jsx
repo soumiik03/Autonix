@@ -32,6 +32,24 @@ function normalizeName(name) {
   return name.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
+function getAgentList(data) {
+  return Array.isArray(data) ? data : data?.agents || [];
+}
+
+function hasAgentName(agentList, name) {
+  const targetName = normalizeName(name);
+  return agentList.some((agent) => normalizeName(agent.name || "") === targetName);
+}
+
+function validateAgent({ name, instructions, knowledgeBase, tools, agents }) {
+  if (!name.trim() || !instructions.trim() || !knowledgeBase.trim()) {
+    return "Complete each required field before creating your agent.";
+  }
+  if (!tools.length) return "Choose at least one capability for your agent.";
+  if (hasAgentName(agents, name)) return "An agent with this name already exists.";
+  return "";
+}
+
 function CharacterCount({ value, maxLength }) {
   return (
     <span className="self-end text-[12px] leading-[1.33] text-[#737373]">
@@ -51,50 +69,25 @@ export function CreateAgent() {
   const [loading, setLoading] = useState(false);
 
   const toggleTool = (toolId) => {
-    setTools((currentTools) => {
-      if (currentTools.includes(toolId)) {
-        return currentTools.filter((id) => id !== toolId);
-      }
-
-      return [...currentTools, toolId];
-    });
+    setTools((currentTools) => currentTools.includes(toolId)
+      ? currentTools.filter((id) => id !== toolId)
+      : [...currentTools, toolId]);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setError("");
 
-    if (!name.trim() || !instructions.trim() || !knowledgeBase.trim()) {
-      setError("Complete each required field before creating your agent.");
-      return;
-    }
-
-    if (!tools.length) {
-      setError("Choose at least one capability for your agent.");
-      return;
-    }
-
-    const normalizedName = normalizeName(name);
-    const nameAlreadyUsed = agents.some(
-      (agent) => normalizeName(agent.name || "") === normalizedName,
-    );
-
-    if (nameAlreadyUsed) {
-      setError("An agent with this name already exists.");
+    const validationError = validateAgent({ name, instructions, knowledgeBase, tools, agents });
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
     setLoading(true);
     try {
-      const latestAgents = await getAllAgents();
-      const agentList = Array.isArray(latestAgents)
-        ? latestAgents
-        : latestAgents?.agents || [];
-      const latestNameAlreadyUsed = agentList.some(
-        (agent) => normalizeName(agent.name || "") === normalizedName,
-      );
-
-      if (latestNameAlreadyUsed) {
+      const latestAgents = getAgentList(await getAllAgents());
+      if (hasAgentName(latestAgents, name)) {
         setError("An agent with this name already exists.");
         return;
       }

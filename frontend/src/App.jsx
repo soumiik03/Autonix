@@ -19,7 +19,7 @@ function App() {
   const dispatch = useDispatch();
   const [authLoading, setAuthLoading] = useState(true);
   const userData = useSelector((state) => state.user.userData);
-  
+
   useEffect(() => {
     me()
       .then((data) => dispatch(setUserData(data || null)))
@@ -34,6 +34,7 @@ function App() {
       </main>
     );
   }
+
   const isAuthenticated = Boolean(userData);
 
   return (
@@ -75,7 +76,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/chat" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Chat /></ProtectedRoute>} />
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Chat />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
