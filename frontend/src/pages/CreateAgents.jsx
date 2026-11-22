@@ -22,6 +22,19 @@ const availableTools = [
   { id: "code_execution", label: "Code execution", Icon: Code2 },
 ];
 
+const fieldClasses =
+  "h-11 rounded-[10px] border-[#d9d9d9] px-3 shadow-none transition-colors duration-200 focus-visible:border-[#171717] focus-visible:ring-1 focus-visible:ring-[#171717]";
+const textAreaClasses =
+  "min-h-[132px] resize-none rounded-[10px] border-[#d9d9d9] px-3 py-3 shadow-none transition-colors duration-200 focus-visible:border-[#171717] focus-visible:ring-1 focus-visible:ring-[#171717]";
+
+function CharacterCount({ value, maxLength }) {
+  return (
+    <span className="self-end text-[12px] leading-[1.33] text-[#737373]">
+      {value.length} / {maxLength}
+    </span>
+  );
+}
+
 export function CreateAgent() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
@@ -31,12 +44,15 @@ export function CreateAgent() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const toggleTool = (toolId) =>
-    setTools((prevTools) =>
-      prevTools.includes(toolId)
-        ? prevTools.filter((id) => id !== toolId)
-        : [...prevTools, toolId],
-    );
+  const toggleTool = (toolId) => {
+    setTools((currentTools) => {
+      if (currentTools.includes(toolId)) {
+        return currentTools.filter((id) => id !== toolId);
+      }
+
+      return [...currentTools, toolId];
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -117,7 +133,7 @@ export function CreateAgent() {
                   placeholder="e.g. Research assistant"
                   maxLength={60}
                   required
-                  className="h-11 rounded-[10px] border-[#d9d9d9] px-3 shadow-none transition-colors duration-200 focus-visible:border-[#171717] focus-visible:ring-1 focus-visible:ring-[#171717]"
+                  className={fieldClasses}
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -134,11 +150,9 @@ export function CreateAgent() {
                   placeholder="Describe the agent's role and how it should respond..."
                   maxLength={1500}
                   required
-                  className="min-h-[132px] resize-none rounded-[10px] border-[#d9d9d9] px-3 py-3 shadow-none transition-colors duration-200 focus-visible:border-[#171717] focus-visible:ring-1 focus-visible:ring-[#171717]"
+                  className={textAreaClasses}
                 />
-                <span className="self-end text-[12px] leading-[1.33] text-[#737373]">
-                  {instructions.length} / 1500
-                </span>
+                <CharacterCount value={instructions} maxLength={1500} />
               </div>
               <div className="flex flex-col gap-2">
                 <Label
@@ -154,11 +168,9 @@ export function CreateAgent() {
                   placeholder="Add context or reference material..."
                   maxLength={3000}
                   required
-                  className="min-h-[132px] resize-none rounded-[10px] border-[#d9d9d9] px-3 py-3 shadow-none transition-colors duration-200 focus-visible:border-[#171717] focus-visible:ring-1 focus-visible:ring-[#171717]"
+                  className={textAreaClasses}
                 />
-                <span className="self-end text-[12px] leading-[1.33] text-[#737373]">
-                  {knowledgeBase.length} / 3000
-                </span>
+                <CharacterCount value={knowledgeBase} maxLength={3000} />
               </div>
             </div>
           </section>

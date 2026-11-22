@@ -12,10 +12,16 @@ export function SiteHeader() {
   const navigate = useNavigate();
   const [avatarError, setAvatarError] = useState(false);
   const signOut = async () => {
-    await logout();
-    dispatch(setUserData(null));
-    navigate("/login");
+    try {
+      await logout();
+    } finally {
+      dispatch(setUserData(null));
+      navigate("/login");
+    }
   };
+  const avatarLabel = user?.name || user?.email || "A";
+  const showProfilePicture = user?.profilePicture && !avatarError;
+
   return (
     <header className="site-header h-[72px] border-b border-[#f0f0f0] px-6 sm:px-8 lg:px-12">
       <Link to="/" className="brand shrink-0 font-bold transition-opacity duration-200 hover:opacity-70">
@@ -36,11 +42,11 @@ export function SiteHeader() {
         >
           Sign out
         </Button>
-        {user?.profilePicture && !avatarError ? (
+        {showProfilePicture ? (
           <img className="nav-avatar" src={user.profilePicture} alt="" onError={() => setAvatarError(true)} />
         ) : (
-          <span className="nav-avatar nav-avatar-fallback" aria-label={user?.name || "Account"}>
-            {(user?.name || user?.email || "A").slice(0, 1).toUpperCase()}
+          <span className="nav-avatar nav-avatar-fallback" aria-label={avatarLabel}>
+            {avatarLabel.slice(0, 1).toUpperCase()}
           </span>
         )}
       </nav>

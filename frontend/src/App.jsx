@@ -9,7 +9,10 @@ import { Agents } from "./pages/Agents";
 import { Integration } from "./pages/Integration";
 import { CreateAgent } from "./pages/CreateAgents";
 import "./App.css";
-import { chat } from "./features/chat";
+
+function ProtectedRoute({ children, isAuthenticated }) {
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
+}
 
 function App() {
   const dispatch = useDispatch();
@@ -23,25 +26,55 @@ function App() {
       .finally(() => setAuthLoading(false));
   }, [dispatch]);
 
-  if (authLoading)
+  if (authLoading) {
     return (
       <main className="login-page">
         <p className="muted small">Restoring your workspace...</p>
       </main>
     );
-  const protectedPage = (element) =>
-    userData ? element : <Navigate to="/login" replace />;
+  }
+
+  const isAuthenticated = Boolean(userData);
+
   return (
     <BrowserRouter>
       <Routes>
         <Route
           path="/login"
-          element={userData ? <Navigate to="/" replace /> : <Login />}
+          element={isAuthenticated ? <Navigate to="/" replace /> : <Login />}
         />
-        <Route path="/" element={protectedPage(<Home />)} />
-        <Route path="/agents" element={protectedPage(<Agents />)} />
-        <Route path="/agents/new" element={protectedPage(<CreateAgent />)} />
-        <Route path="/integration" element={protectedPage(<Integration />)} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/agents"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Agents />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/agents/new"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <CreateAgent />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/integration"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Integration />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

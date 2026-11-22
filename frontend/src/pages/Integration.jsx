@@ -4,27 +4,39 @@ import { Card, CardContent } from "../components/ui/card";
 import { SiteHeader } from "../components/SiteHeader";
 
 const integrations = [
-  [
-    "Google",
-    "Use your Google account to securely sign in to Autonix.",
-    "Connected",
-  ],
-  [
-    "Webhooks",
-    "Connect agents to the tools and workflows you already use.",
-    "Coming soon",
-  ],
-  [
-    "API access",
-    "Bring your agents into your own applications and services.",
-    "Coming soon",
-  ],
-  [
-    "Knowledge sources",
-    "Give agents useful context from your existing information.",
-    "Coming soon",
-  ],
+  {
+    name: "Google",
+    description: "Use your Google account to securely sign in to Autonix.",
+    status: "Connected",
+  },
+  {
+    name: "Webhooks",
+    description: "Connect agents to the tools and workflows you already use.",
+    status: "Coming soon",
+  },
+  {
+    name: "API access",
+    description: "Bring your agents into your own applications and services.",
+    status: "Coming soon",
+  },
+  {
+    name: "Knowledge sources",
+    description: "Give agents useful context from your existing information.",
+    status: "Coming soon",
+  },
 ];
+
+function IntegrationStatus({ status }) {
+  const isConnected = status === "Connected";
+
+  return (
+    <span className="small muted">
+      {isConnected ? <Check size={14} className="mr-1 inline" /> : null}
+      {status}
+      {!isConnected ? <ExternalLink size={13} className="ml-1 inline" /> : null}
+    </span>
+  );
+}
 
 export function Integration() {
   return (
@@ -37,7 +49,7 @@ export function Integration() {
           Connect Autonix to the services that make your agents more useful.
         </p>
         <div className="integration-grid">
-          {integrations.map(([name, description, status]) => (
+          {integrations.map(({ name, description, status }) => (
             <Card
               className="integration-card rounded-none border-0 shadow-none"
               key={name}
@@ -47,19 +59,7 @@ export function Integration() {
                   <h2>{name}</h2>
                   <p>{description}</p>
                 </div>
-                <span className="small muted">
-                  {status === "Connected" ? (
-                    <>
-                      <Check size={14} className="mr-1 inline" />
-                      {status}
-                    </>
-                  ) : (
-                    <>
-                      {status}{" "}
-                      <ExternalLink size={13} className="ml-1 inline" />
-                    </>
-                  )}
-                </span>
+                <IntegrationStatus status={status} />
               </CardContent>
             </Card>
           ))}

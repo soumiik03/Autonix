@@ -8,42 +8,49 @@ import { SiteHeader } from "../components/SiteHeader";
 
 export function Agents() {
   const [agents, setAgents] = useState([]);
-  const [search,setSearch] = useState("");
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const fetchAgents = async () => {
-    setLoading(true);
-    try {
-      const data = await getAllAgents();
-      setAgents(data?.agents || []);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching agents:", error);
-      setAgents([]);
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    fetchAgents();
+    async function loadAgents() {
+      try {
+        const data = await getAllAgents();
+        setAgents(data?.agents || []);
+      } catch (error) {
+        console.error("Error fetching agents:", error);
+        setAgents([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadAgents();
   }, []);
 
-  const filteredAgents = agents.filter((agent) =>{
-    return(
-      agent?.name?.toLowerCase()?.includes(search.toLowerCase()) ||
-      agent?.instructions?.toLowerCase()?.includes(search.toLowerCase()) ||
-      agent?.knowledgeBase?.toLowerCase()?.includes(search.toLowerCase()) 
-    )
+  const searchText = search.toLowerCase();
+  const filteredAgents = agents.filter((agent) => {
+    const searchableText = [
+      agent?.name,
+      agent?.instructions,
+      agent?.knowledgeBase,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return searchableText.includes(searchText);
   });
   
   const handleDelete = async (agentId) => {
     try {
       await deleteAgent(agentId);
-      setAgents((prevAgents) => prevAgents.filter((agent) => agent._id !== agentId));
+      setAgents((currentAgents) =>
+        currentAgents.filter((agent) => agent._id !== agentId),
+      );
     } catch (error) {
       console.error("Error deleting agent:", error);
     }
-  }
+  };
   
   return (
     <div className="app-shell">
