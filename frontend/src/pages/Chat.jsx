@@ -1,19 +1,33 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowUp, Bot, Check, ChevronDown, Plus, UserRound } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Brand } from "../components/Brand";
+import { chat } from "../features/chat";
 import { getAllAgents } from "../features/agent";
 import { setAgents, setAgentsLoading, setSelectedAgent } from "../../redux/agentSlice";
+
+function cleanResponse(text) {
+  return String(text)
+    .replace(/^#{1,6}\s*/gm, "")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/__(.*?)__/g, "$1")
+    .replace(/`{1,3}/g, "")
+    .replace(/^\s*[-*]\s+/gm, "• ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
 
 export function Chat() {
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
   const [agentMenuOpen, setAgentMenuOpen] = useState(false);
+  const threadRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { agents, selectedAgent, agentsLoading } = useSelector((state) => state.agent);
-  const activeAgentName = selectedAgent || "No agent selected";
+  const activeAgentName = selectedAgent || "Autonix";
   const suggestions = ["Plan my workday", "Create an agent", "Review an idea"];
 
   useEffect(() => {
@@ -43,16 +57,34 @@ export function Chat() {
     }
   }, [agents, dispatch, selectedAgent]);
 
-  function sendMessage(message = draft) {
-    const cleanMessage = message.trim();
-    if (!cleanMessage) return;
+  useEffect(() => {
+    const thread = threadRef.current;
+    if (thread) thread.scrollTop = thread.scrollHeight;
+  }, [messages, chatLoading]);
 
-    setMessages((current) => [
-      ...current,
-      { role: "user", text: cleanMessage },
-      { role: "assistant", text: "I have that noted. Tell me what outcome you want, and we can shape the next step." },
-    ]);
+  async function sendMessage(message = draft) {
+    const cleanMessage = message.trim();
+    if (!cleanMessage || chatLoading || selectedAgent) return;
+
+    setMessages((current) => [...current, { role: "user", text: cleanMessage }]);
     setDraft("");
+
+    setChatLoading(true);
+    try {
+      const response = await chat(cleanMessage);
+      setMessages((current) => [
+        ...current,
+        { role: "assistant", text: response || "The assistant did not return a response." },
+      ]);
+    } catch (error) {
+      console.error("Chat request failed:", error);
+      setMessages((current) => [
+        ...current,
+        { role: "assistant", text: "I could not get a response. Please try again." },
+      ]);
+    } finally {
+      setChatLoading(false);
+    }
   }
 
   function handleSubmit(event) {
@@ -100,39 +132,39 @@ export function Chat() {
       </header>
 
       <section className="chat-content" aria-label="Chat with Autonix">
-        <div className="chat-intro">
-          <p className="chat-kicker">Chat</p>
-          <h1>What are you working on?</h1>
-          <p>Start with a clear task and shape the next step.</p>
-        </div>
-
-        <div className="chat-thread">
-          {messages.length === 0 ? (
-            <div className="chat-empty-state">
-              <p>Write your first message</p>
-              <div className="chat-suggestions" aria-label="Suggested messages">
-                {suggestions.map((suggestion) => (
-                  <button type="button" key={suggestion} onClick={() => chooseSuggestion(suggestion)}>
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
+        {messages.length === 0 && (
+          <div className="chat-intro">
+            <p className="chat-kicker">Chat</p>
+            <h1>What are you working on?</h1>
+            <p>Start with a clear task and shape the next step.</p>
+            <div className="chat-suggestions" aria-label="Suggested messages">
+              {suggestions.map((suggestion) => (
+                <button type="button" key={suggestion} onClick={() => chooseSuggestion(suggestion)}>
+                  {suggestion}
+                </button>
+              ))}
             </div>
-          ) : messages.map((message, index) => (
+          </div>
+        )}
+
+        <div className="chat-thread" ref={threadRef}>
+          {messages.map((message, index) => (
             <div className={`chat-message chat-message-${message.role}`} key={`${message.role}-${index}`}>
               <span className="chat-message-icon" aria-hidden="true">
                 {message.role === "assistant" ? <Bot size={17} /> : <UserRound size={16} />}
               </span>
-              <p>{message.text}</p>
+              <p>{message.role === "assistant" ? cleanResponse(message.text) : message.text}</p>
             </div>
           ))}
+          {chatLoading && <p className="chat-loading">Thinking...</p>}
         </div>
 
         <form className="chat-composer" onSubmit={handleSubmit}>
           <p className="chat-agent-context">
             Using <strong>{activeAgentName}</strong>
           </p>
-          <textarea value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={handleKeyDown} placeholder={`Message ${activeAgentName}`} rows="2" aria-label={`Message ${activeAgentName}`} />
+          {selectedAgent && <p className="chat-agent-note">Agent chat will be available later. Choose Autonix to chat now.</p>}
+          <textarea value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={handleKeyDown} placeholder={selectedAgent ? `Message ${selectedAgent}` : "Ask Autonix anything"} rows="2" aria-label={`Message ${activeAgentName}`} />
           <div className="chat-composer-footer">
             <div className="chat-agent-picker">
               <button className="chat-agent-trigger" type="button" onClick={() => setAgentMenuOpen((open) => !open)} aria-expanded={agentMenuOpen} aria-haspopup="listbox" disabled={agentsLoading}>
@@ -141,6 +173,10 @@ export function Chat() {
               </button>
               {agentMenuOpen && (
                 <div className="chat-agent-menu" role="listbox" aria-label="Choose an agent">
+                  <button type="button" className={!selectedAgent ? "is-selected" : ""} onClick={() => chooseAgent("")} aria-selected={!selectedAgent}>
+                    <span>Autonix</span>
+                    {!selectedAgent && <Check size={15} aria-hidden="true" />}
+                  </button>
                   {agents.length === 0 && <span className="chat-agent-empty">No agents yet</span>}
                   {agents.map((agent) => (
                     <button type="button" className={selectedAgent === agent.name ? "is-selected" : ""} key={agent._id} onClick={() => chooseAgent(agent.name)} aria-selected={selectedAgent === agent.name}>
@@ -153,7 +189,7 @@ export function Chat() {
               )}
             </div>
             <button className="chat-new-button" type="button" onClick={startNewConversation}><Plus size={14} /> New conversation</button>
-            <button className="chat-send-button" type="submit" aria-label="Send message" disabled={!draft.trim()}><ArrowUp size={17} /></button>
+            <button className="chat-send-button" type="submit" aria-label="Send message" disabled={!draft.trim() || chatLoading || Boolean(selectedAgent)}><ArrowUp size={17} /></button>
           </div>
         </form>
       </section>

@@ -15,7 +15,7 @@ export const chat=async (req, res)=>{
         },{configurable:{thread_id:threadId}});
 
         const lastMessage=data.messages[data.messages.length-1].content;
-        return res.status(200).json(lastMessage);
+        return res.status(200).json({ aiResponse: lastMessage });
 
     }catch(err){
         console.error(err);
