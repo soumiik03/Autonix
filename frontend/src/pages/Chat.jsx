@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { ArrowUp, Bot, Paperclip, Plus, UserRound } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Brand } from "../components/Brand";
 
 export function Chat() {
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState("");
+  const selectedAgent = useSelector((state) => state.agent.selectedAgent);
   const suggestions = ["Plan my workday", "Create an agent", "Review an idea"];
 
   function sendMessage(message = draft) {
@@ -79,7 +81,12 @@ export function Chat() {
         </div>
 
         <form className="chat-composer" onSubmit={handleSubmit}>
-          <textarea value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={handleKeyDown} placeholder="Ask Autonix anything" rows="2" aria-label="Message Autonix" />
+          {selectedAgent && (
+            <p className="chat-agent-context">
+              Using <strong>{selectedAgent}</strong>
+            </p>
+          )}
+          <textarea value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={handleKeyDown} placeholder={selectedAgent ? `Message ${selectedAgent}` : "Ask Autonix anything"} rows="2" aria-label="Message Autonix" />
           <div className="chat-composer-footer">
             <button className="chat-tool-button" type="button" aria-label="Add attachment"><Paperclip size={17} /></button>
             <span className="chat-hint"><Plus size={14} /> New conversation</span>

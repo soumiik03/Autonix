@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ArrowRight, Plus, Search, Trash2 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { getAllAgents, deleteAgent } from "../features/agent";
-import { setAgents, setAgentsLoading, setDelete } from "../../redux/agentSlice";
+import { setAgents, setAgentsLoading, setDelete, setSelectedAgent } from "../../redux/agentSlice";
 import { SiteHeader } from "../components/SiteHeader";
 
 export function Agents() {
   const [search, setSearch] = useState("");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { agents, agentsLoading: loading } = useSelector((state) => state.agent);
 
   useEffect(() => {
@@ -131,9 +132,16 @@ export function Agents() {
                   <span className="text-[12px] leading-[1.33] text-[#737373]">
                     {new Date(agent.createdAt).toLocaleDateString()}
                   </span>
-                  <span className="inline-flex items-center gap-2 text-[14px] text-[#171717] transition-colors duration-200 group-hover:text-[#737373]">
-                    View agent <ArrowRight size={14} />
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      dispatch(setSelectedAgent(agent.name));
+                      navigate("/chat");
+                    }}
+                    className="inline-flex items-center gap-2 text-[14px] text-[#171717] transition-colors duration-200 group-hover:text-[#737373]"
+                  >
+                    Use agent <ArrowRight size={14} />
+                  </button>
                 </div>
               </article>
             ))}
