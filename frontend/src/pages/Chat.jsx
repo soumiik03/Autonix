@@ -24,6 +24,7 @@ export function Chat() {
   const [chatLoading, setChatLoading] = useState(false);
   const [agentMenuOpen, setAgentMenuOpen] = useState(false);
   const threadRef = useRef(null);
+  const conversationId = useRef(crypto.randomUUID());
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { agents, selectedAgent, agentsLoading } = useSelector((state) => state.agent);
@@ -71,16 +72,17 @@ export function Chat() {
 
     setChatLoading(true);
     try {
-      const response = await chat(cleanMessage);
+      const response = await chat(cleanMessage, conversationId.current);
       setMessages((current) => [
         ...current,
         { role: "assistant", text: response || "The assistant did not return a response." },
       ]);
     } catch (error) {
       console.error("Chat request failed:", error);
+      const errorMessage = error.response?.data?.error || error.message;
       setMessages((current) => [
         ...current,
-        { role: "assistant", text: "I could not get a response. Please try again." },
+        { role: "assistant", text: errorMessage || "I could not get a response. Please try again." },
       ]);
     } finally {
       setChatLoading(false);
@@ -111,6 +113,7 @@ export function Chat() {
   function startNewConversation() {
     setMessages([]);
     setDraft("");
+    conversationId.current = crypto.randomUUID();
   }
 
   function createNewAgent() {
