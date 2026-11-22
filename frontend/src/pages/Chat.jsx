@@ -1,14 +1,39 @@
-import { useState } from "react";
-import { ArrowUp, Bot, Paperclip, Plus, UserRound } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { ArrowUp, Bot, ChevronDown, Plus, UserRound } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { Brand } from "../components/Brand";
+import { getAllAgents } from "../features/agent";
+import { setAgents, setAgentsLoading, setSelectedAgent } from "../../redux/agentSlice";
 
 export function Chat() {
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState("");
-  const selectedAgent = useSelector((state) => state.agent.selectedAgent);
+  const [agentMenuOpen, setAgentMenuOpen] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { agents, selectedAgent, agentsLoading } = useSelector((state) => state.agent);
+  const activeAgentName = selectedAgent || "Bot";
   const suggestions = ["Plan my workday", "Create an agent", "Review an idea"];
+
+  useEffect(() => {
+    if (agents.length > 0) return;
+
+    async function loadAgents() {
+      dispatch(setAgentsLoading(true));
+
+      try {
+        const data = await getAllAgents();
+        dispatch(setAgents(data));
+      } catch (error) {
+        console.error("Error fetching agents:", error);
+      } finally {
+        dispatch(setAgentsLoading(false));
+      }
+    }
+
+    loadAgents();
+  }, [agents.length, dispatch]);
 
   function sendMessage(message = draft) {
     const cleanMessage = message.trim();
@@ -36,6 +61,21 @@ export function Chat() {
 
   function chooseSuggestion(suggestion) {
     setDraft(suggestion);
+  }
+
+  function chooseAgent(agentName) {
+    dispatch(setSelectedAgent(agentName));
+    setAgentMenuOpen(false);
+  }
+
+  function startNewConversation() {
+    setMessages([]);
+    setDraft("");
+  }
+
+  function createNewAgent() {
+    setAgentMenuOpen(false);
+    navigate("/agents/new");
   }
 
   return (
@@ -81,15 +121,29 @@ export function Chat() {
         </div>
 
         <form className="chat-composer" onSubmit={handleSubmit}>
-          {selectedAgent && (
-            <p className="chat-agent-context">
-              Using <strong>{selectedAgent}</strong>
-            </p>
-          )}
-          <textarea value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={handleKeyDown} placeholder={selectedAgent ? `Message ${selectedAgent}` : "Ask Autonix anything"} rows="2" aria-label="Message Autonix" />
+          <p className="chat-agent-context">
+            Using <strong>{activeAgentName}</strong>
+          </p>
+          <textarea value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={handleKeyDown} placeholder={`Message ${activeAgentName}`} rows="2" aria-label={`Message ${activeAgentName}`} />
           <div className="chat-composer-footer">
-            <button className="chat-tool-button" type="button" aria-label="Add attachment"><Paperclip size={17} /></button>
-            <span className="chat-hint"><Plus size={14} /> New conversation</span>
+            <div className="chat-agent-picker">
+              <button className="chat-agent-trigger" type="button" onClick={() => setAgentMenuOpen((open) => !open)} aria-expanded={agentMenuOpen} aria-haspopup="listbox" disabled={agentsLoading}>
+                <span>{activeAgentName}</span>
+                <ChevronDown size={15} />
+              </button>
+              {agentMenuOpen && (
+                <div className="chat-agent-menu" role="listbox" aria-label="Choose an agent">
+                  <button type="button" className={!selectedAgent ? "is-selected" : ""} onClick={() => chooseAgent("")}>Bot</button>
+                  {agents.map((agent) => (
+                    <button type="button" className={selectedAgent === agent.name ? "is-selected" : ""} key={agent._id} onClick={() => chooseAgent(agent.name)}>
+                      {agent.name}
+                    </button>
+                  ))}
+                  <button type="button" className="chat-create-agent" onClick={createNewAgent}>Create new agent</button>
+                </div>
+              )}
+            </div>
+            <button className="chat-new-button" type="button" onClick={startNewConversation}><Plus size={14} /> New conversation</button>
             <button className="chat-send-button" type="submit" aria-label="Send message" disabled={!draft.trim()}><ArrowUp size={17} /></button>
           </div>
         </form>

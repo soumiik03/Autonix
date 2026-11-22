@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import {
   ArrowLeft,
   ArrowRight,
@@ -14,7 +15,7 @@ import { Textarea } from "../components/ui/textarea";
 import { Checkbox } from "../components/ui/checkbox";
 import { Label } from "../components/ui/label";
 import { SiteHeader } from "../components/SiteHeader";
-import { createAgent } from "../features/agent";
+import { createAgent, getAllAgents } from "../features/agent";
 
 const availableTools = [
   { id: "web_search", label: "Web search", Icon: Globe2 },
@@ -27,6 +28,10 @@ const fieldClasses =
 const textAreaClasses =
   "min-h-[132px] resize-none rounded-[10px] border-[#d9d9d9] px-3 py-3 shadow-none transition-colors duration-200 focus-visible:border-[#171717] focus-visible:ring-1 focus-visible:ring-[#171717]";
 
+function normalizeName(name) {
+  return name.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
 function CharacterCount({ value, maxLength }) {
   return (
     <span className="self-end text-[12px] leading-[1.33] text-[#737373]">
@@ -37,6 +42,7 @@ function CharacterCount({ value, maxLength }) {
 
 export function CreateAgent() {
   const navigate = useNavigate();
+  const agents = useSelector((state) => state.agent.agents);
   const [name, setName] = useState("");
   const [instructions, setInstructions] = useState("");
   const [knowledgeBase, setKnowledgeBase] = useState("");
@@ -68,8 +74,31 @@ export function CreateAgent() {
       return;
     }
 
+    const normalizedName = normalizeName(name);
+    const nameAlreadyUsed = agents.some(
+      (agent) => normalizeName(agent.name || "") === normalizedName,
+    );
+
+    if (nameAlreadyUsed) {
+      setError("An agent with this name already exists.");
+      return;
+    }
+
     setLoading(true);
     try {
+      const latestAgents = await getAllAgents();
+      const agentList = Array.isArray(latestAgents)
+        ? latestAgents
+        : latestAgents?.agents || [];
+      const latestNameAlreadyUsed = agentList.some(
+        (agent) => normalizeName(agent.name || "") === normalizedName,
+      );
+
+      if (latestNameAlreadyUsed) {
+        setError("An agent with this name already exists.");
+        return;
+      }
+
       await createAgent({
         name: name.trim(),
         instructions: instructions.trim(),
