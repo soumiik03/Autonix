@@ -20,7 +20,12 @@ const agentSlice = createSlice({
       state.agentsLoading = action.payload;
     },
     setDelete: (state, action) => {
+      const deletedAgent = state.agents.find((agent) => agent._id === action.payload);
       state.agents = state.agents.filter((agent) => agent._id !== action.payload);
+
+      if (deletedAgent?.name === state.selectedAgent) {
+        state.selectedAgent = "";
+      }
     },
   },
 });

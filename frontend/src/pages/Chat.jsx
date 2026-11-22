@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowUp, Bot, ChevronDown, Plus, UserRound } from "lucide-react";
+import { ArrowUp, Bot, Check, ChevronDown, Plus, UserRound } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Brand } from "../components/Brand";
@@ -13,7 +13,7 @@ export function Chat() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { agents, selectedAgent, agentsLoading } = useSelector((state) => state.agent);
-  const activeAgentName = selectedAgent || "Bot";
+  const activeAgentName = selectedAgent || "No agent selected";
   const suggestions = ["Plan my workday", "Create an agent", "Review an idea"];
 
   useEffect(() => {
@@ -34,6 +34,14 @@ export function Chat() {
 
     loadAgents();
   }, [agents.length, dispatch]);
+
+  useEffect(() => {
+    const selectedAgentExists = agents.some((agent) => agent.name === selectedAgent);
+
+    if (selectedAgent && agents.length > 0 && !selectedAgentExists) {
+      dispatch(setSelectedAgent(""));
+    }
+  }, [agents, dispatch, selectedAgent]);
 
   function sendMessage(message = draft) {
     const cleanMessage = message.trim();
@@ -133,10 +141,11 @@ export function Chat() {
               </button>
               {agentMenuOpen && (
                 <div className="chat-agent-menu" role="listbox" aria-label="Choose an agent">
-                  <button type="button" className={!selectedAgent ? "is-selected" : ""} onClick={() => chooseAgent("")}>Bot</button>
+                  {agents.length === 0 && <span className="chat-agent-empty">No agents yet</span>}
                   {agents.map((agent) => (
-                    <button type="button" className={selectedAgent === agent.name ? "is-selected" : ""} key={agent._id} onClick={() => chooseAgent(agent.name)}>
-                      {agent.name}
+                    <button type="button" className={selectedAgent === agent.name ? "is-selected" : ""} key={agent._id} onClick={() => chooseAgent(agent.name)} aria-selected={selectedAgent === agent.name}>
+                      <span>{agent.name}</span>
+                      {selectedAgent === agent.name && <Check size={15} aria-hidden="true" />}
                     </button>
                   ))}
                   <button type="button" className="chat-create-agent" onClick={createNewAgent}>Create new agent</button>
