@@ -1,6 +1,7 @@
 import { createAgentGraph } from "../utils/agentGraph.js";
 import chatGraph from "../utils/chatGraph.js";
 import { HumanMessage } from "@langchain/core/messages";
+import Agent from "../models/agent.model.js";
 
 export const chat=async (req, res)=>{
     try{
@@ -39,7 +40,7 @@ export const agentChat=async (req, res)=>{
         }
 
         const threadId = `${req.user._id.toString()}:${conversationId}`;
-        const graph=await createAgentGraph.invoke(agent,req.user._id)
+        const graph=await createAgentGraph(existingAgent,req.user._id.toString())
         const result=await graph.invoke({
             messages:[
                     new HumanMessage(messages),

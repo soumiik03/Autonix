@@ -1,10 +1,12 @@
 import { SystemMessage } from "@langchain/core/messages";
 import { ChatGroq } from "@langchain/groq"
 import {  StateGraph, MessagesAnnotation } from "@langchain/langgraph";
+import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { MongoDBSaver } from "@langchain/langgraph-checkpoint-mongodb";
 import { MongoClient } from "mongodb";
-import { getMcpTools } from "../mcp/langGraph-mcp";
+import { getMcpTools } from "../mcp/langGraph-mcp.js";
 import { DynamicStructuredTool } from "@langchain/core/tools";
+import { z } from "zod";
 
 const llm = new ChatGroq({
     model: "openai/gpt-oss-120b",
@@ -22,10 +24,10 @@ const findTools=(tools,names)=>{
 
 export const createAgentGraph=async(agent,userId)=>{
 
-    const mcptools=getMcpTools()
+    const mcptools=await getMcpTools()
     console.log(mcptools.map((tool)=>tool.name))
 
-    const webSerachMCPTool=findTools(mcpTools,["web_search","autonix_web_search"])
+    const webSerachMCPTool=findTools(mcptools,["web_search","autonix_web_search"])
 
     const finalTools=[]
     if(webSerachMCPTool){
@@ -40,9 +42,10 @@ export const createAgentGraph=async(agent,userId)=>{
                     func:async({query})=>{
                         try {
                            const result= await webSerachMCPTool.invoke({query}) 
-                           console.log(result)
+                           return JSON.stringify(result)
                         } catch (error) {
                             console.error("Mcp search error",error)
+                            return JSON.stringify({error:"web search failed"})
                         }
                     }
                 }
@@ -58,14 +61,13 @@ export const createAgentGraph=async(agent,userId)=>{
     timeStyle:"long"
     }).format(new Date())
 
-    const systemPrompt={
-        
-    }
-    const approvalTools=new Set({
+    const systemPrompt=`You are ${agent.name}. Follow these instructions: ${agent.instructions}
+Use web_search for current weather, latest news, and any information that may have changed. Do not guess current information.`
+    const approvalTools=new Set([
         "set_email",
         "create_calender_event",
         "publish instagram image"
-    })
+    ])
 
     const chatNode = async (state) => {
         const recentMessages=state.messages.slice(-4)
@@ -84,26 +86,21 @@ export const createAgentGraph=async(agent,userId)=>{
 
     }
 
-    const routeFromChat=()=>{
-
-    }
-
-    const routeAfterChat=()=>{
+    const routeAfterChat=(state)=>{
         const messages=state.messages || []
         console.log(messages)
         const lastMessage=messages[messages.length-1]
-        if(!lastMessage.tool_calls?.length==0){
+        if(!lastMessage?.tool_calls?.length){
             return "__end__"
         }
         const requiresApproval=lastMessage?.tool_calls?.some((call)=>{
             approvalTools.has(call.name)
         })
-        return requiresApproval?:"actionApprovalNode":"tools"
+        return requiresApproval?"actionApprovalNode":"tools"
     }   
 
-    const routeAfterApproval=()=>{
-
-    }
+    const routeFromChat=(state)=>routeAfterChat(state)
+    const routeAfterApproval=()=>"tools"
 
     const workflow=new StateGraph(MessagesAnnotation)
     .addNode("chatNode",chatNode)
@@ -113,7 +110,6 @@ export const createAgentGraph=async(agent,userId)=>{
     .addConditionalEdges("chatNode", routeFromChat)
     .addEdge("tools","chatNode")
     .addConditionalEdges("actionApprovalNode",routeAfterApproval)
-    .addEdge("chatNode","__end__")
 
     const chatAgentGraph=workflow.compile({checkpointer})
     return  chatAgentGraph

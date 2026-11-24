@@ -1,5 +1,6 @@
+import "dotenv/config";
 import { McpServer } from "@modelcontextprotocol/server";
-import { serveStdio, StdioServerTransport } from "@modelcontextprotocol/server/stdio";
+import { StdioServerTransport } from "@modelcontextprotocol/server/stdio";
 import { z } from "zod";
 import { TavilySearch } from "@langchain/tavily";
 
@@ -7,11 +8,6 @@ import { TavilySearch } from "@langchain/tavily";
     name: "autonix",
     version: "1.0.0",
   });
-
-const tavilySearch = new TavilySearch({
-  maxResults: 5,
-  topic: "general",
-});
 
 server.registerTool(
     "web_search",
@@ -25,12 +21,16 @@ server.registerTool(
     },
     async({query})=>{
         try {
+            const tavilySearch = new TavilySearch({
+                maxResults: 5,
+                topic: "general",
+            });
             const result=await tavilySearch.invoke({query})
             return{
                 content:[
                     {
                         type:"text",
-                        text:result.stringify(result)
+                        text:JSON.stringify(result)
                     }
                 ]
             }
