@@ -20,5 +20,5 @@ const adapter = new MCPAdapter({
   
 export const getMcpTools=async ()=>{
   const tools=await adapter.listTools();
-
+  return tools
 }
