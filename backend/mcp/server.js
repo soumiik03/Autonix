@@ -30,7 +30,7 @@ server.registerTool(
                 content:[
                     {
                         type:"text",
-                        text:result
+                        text:result.stringify(result)
                     }
                 ]
             }

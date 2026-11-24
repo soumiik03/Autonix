@@ -14,7 +14,7 @@ export const chat=async (req, res)=>{
             messages:[
                 new HumanMessage(messages),
             ]
-        },{configurable:{thread_id:threadId}});
+        },{configurable:{thread_id:threadId},recursionLimit:5});
 
         const lastMessage=data.messages[data.messages.length-1].content;
         return res.status(200).json({ aiResponse: lastMessage });
