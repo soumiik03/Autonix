@@ -9,11 +9,16 @@ const serverPath=path.join(dirName,"server.js")
 
 const adapter = new MCPAdapter({
   servers: {
-    automate:{
+    autonix:{
         transport:"stdio",
         command:process.execPath,
-        args:serverPath
+        args:[serverPath]
     }
     
   },
 })
+  
+export const getMcpTools=async ()=>{
+  const tools=await adapter.listTools();
+
+}

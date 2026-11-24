@@ -3,6 +3,7 @@ import { ChatGroq } from "@langchain/groq"
 import {  StateGraph, MessagesAnnotation } from "@langchain/langgraph";
 import { MongoDBSaver } from "@langchain/langgraph-checkpoint-mongodb";
 import { MongoClient } from "mongodb";
+import { getMcpTools } from "../mcp/langGraph-mcp";
 
 const llm = new ChatGroq({
     model: "openai/gpt-oss-120b",
@@ -14,50 +15,60 @@ const llm = new ChatGroq({
 const client = new MongoClient(process.env.MONGODB_URI);
 const checkpointer = new MongoDBSaver({ client, dbName: "langgraph" });
 
-const currentDateTime=new Intl.DateTimeFormat("en-IN",{
+const createAgentGraph=async(agent,userId)=>{
+
+    const mcptools=getMcpTools()
+    console.log(mcptools.map((tool)=>tool.name))
+    const llmWithTools=llm.bindTools(mcptools);
+
+    const currentDateTime=new Intl.DateTimeFormat("en-IN",{
     timeZone:"Asia/Kolkata",
     dateStyle:"full",
     timeStyle:"long"
-}).format(new Date())
+    }).format(new Date())
 
-const systemPrompt={
-    
-}
-
-const chatNode = async (state) => {
-    const response = await llm.invoke([
-        new SystemMessage()
-    ])
-    return{
-        messages:[response]
+    const systemPrompt={
+        
     }
+
+
+    const chatNode = async (state) => {
+        const response = await llmWithTools.invoke([
+            new SystemMessage()
+        ])
+        return{
+            messages:[response]
+        }
+    }
+
+    const toolNode=()=>{
+        
+    }
+
+    const actionApprovalNode=()=>{
+
+    }
+
+    const routeFromChat=()=>{
+
+    }
+
+    const routeAfterApproval=()=>{
+
+    }
+
+    const workflow=new StateGraph(MessagesAnnotation)
+    .addNode("chatNode",chatNode)
+    .addNode("tools",toolNode)
+    .addNode("actionApprovalNode",actionApprovalNode)
+    .addEdge("__start__","chatNode")
+    .addConditionalEdges("chatNode", routeFromChat)
+    .addEdge("tools","chatNode")
+    .addConditionalEdges("actionApprovalNode",routeAfterApproval)
+    .addEdge("chatNode","__end__")
+
+    const chatAgentGraph=workflow.compile({checkpointer})
+    return  chatAgentGraph
+
 }
 
-const toolNode=()=>{
-
-}
-
-const actionApprovalNode=()=>{
-
-}
-
-const routeFromChat=()=>{
-
-}
-
-const routeAfterApproval=()=>{
-
-}
-
-const workflow=new StateGraph(MessagesAnnotation)
-.addNode("chatNode",chatNode)
-.addNode("tools",toolNode)
-.addNode("actionApprovalNode",actionApprovalNode)
-.addEdge("__start__","chatNode")
-.addConditionalEdges("chatNode", routeFromChat)
-.addEdge("tools","chatNode")
-.addConditionalEdges("actionApprovalNode",routeAfterApproval)
-.addEdge("chatNode","__end__")
-
-const chatAgentGraph=workflow.compile({checkpointer})
-export default chatAgentGraph
