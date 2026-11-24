@@ -15,7 +15,7 @@ const llm = new ChatGroq({
 const client = new MongoClient(process.env.MONGODB_URI);
 const checkpointer = new MongoDBSaver({ client, dbName: "langgraph" });
 
-const createAgentGraph=async(agent,userId)=>{
+export const createAgentGraph=async(agent,userId)=>{
 
     const mcptools=getMcpTools()
     console.log(mcptools.map((tool)=>tool.name))
@@ -42,7 +42,7 @@ const createAgentGraph=async(agent,userId)=>{
     }
 
     const toolNode=()=>{
-        
+
     }
 
     const actionApprovalNode=()=>{
