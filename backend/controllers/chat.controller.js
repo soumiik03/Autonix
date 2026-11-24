@@ -47,7 +47,7 @@ export const agentChat=async (req, res)=>{
             },{configurable:{thread_id:threadId}
         })
 
-        const lastMessage=data.messages[data.messages.length-1].content;
+        const lastMessage=result.messages[result.messages.length-1].content;
         return res.status(200).json({ aiResponse: lastMessage });
 
     }catch(err){
