@@ -97,7 +97,7 @@ Use web_search for current weather, latest news, and any information that may ha
             return approvalTools.has(call.name)
         })
         return requiresApproval?"actionApprovalNode":"tools"
-    }   
+    }
 
     const routeFromChat=(state)=>routeAfterChat(state)
     const routeAfterApproval=()=>"tools"
