@@ -35,7 +35,7 @@ server.registerTool(
                 ]
             }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             return{
                 content:[
                     {
@@ -51,7 +51,7 @@ server.registerTool(
 const main=async()=>{
     const transport=new StdioServerTransport()
     await server.connect(transport)
-    console.log("Mcp Server started successfully")
+    console.error("Mcp Server started successfully")
 }  
 
 main().catch((error)=>{

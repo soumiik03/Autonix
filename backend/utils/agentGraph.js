@@ -94,7 +94,7 @@ Use web_search for current weather, latest news, and any information that may ha
             return "__end__"
         }
         const requiresApproval=lastMessage?.tool_calls?.some((call)=>{
-            approvalTools.has(call.name)
+            return approvalTools.has(call.name)
         })
         return requiresApproval?"actionApprovalNode":"tools"
     }   
