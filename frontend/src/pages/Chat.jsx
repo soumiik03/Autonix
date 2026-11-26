@@ -3,7 +3,7 @@ import { ArrowUp, Bot, Check, ChevronDown, Plus, UserRound } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Brand } from "../components/Brand";
-import { chat } from "../features/chat";
+import { agentChat, chat } from "../features/chat";
 import { getAllAgents } from "../features/agent";
 import { setAgents, setAgentsLoading, setSelectedAgent } from "../../redux/agentSlice";
 
@@ -58,14 +58,16 @@ export function Chat() {
 
   async function sendMessage(message = draft) {
     const cleanMessage = message.trim();
-    if (!cleanMessage || chatLoading || selectedAgent) return;
+    if (!cleanMessage || chatLoading) return;
 
     setMessages((current) => [...current, { role: "user", text: cleanMessage }]);
     setDraft("");
 
     setChatLoading(true);
     try {
-      const response = await chat(cleanMessage, conversationId.current);
+      const response = selectedAgent
+        ? await agentChat(cleanMessage, selectedAgent)
+        : await chat(cleanMessage, conversationId.current);
       setMessages((current) => [
         ...current,
         { role: "assistant", text: response || "The assistant did not return a response." },
@@ -159,7 +161,6 @@ export function Chat() {
           <p className="chat-agent-context">
             Using <strong>{activeAgentName}</strong>
           </p>
-          {selectedAgent && <p className="chat-agent-note">Agent chat will be available later. Choose Autonix to chat now.</p>}
           <textarea value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={handleKeyDown} placeholder={selectedAgent ? `Message ${selectedAgent}` : "Ask Autonix anything"} rows="2" aria-label={`Message ${activeAgentName}`} />
           <div className="chat-composer-footer">
             <div className="chat-agent-picker">
@@ -185,7 +186,7 @@ export function Chat() {
               )}
             </div>
             <button className="chat-new-button" type="button" onClick={startNewConversation}><Plus size={14} /> New conversation</button>
-            <button className="chat-send-button" type="submit" aria-label="Send message" disabled={!draft.trim() || chatLoading || Boolean(selectedAgent)}><ArrowUp size={17} /></button>
+            <button className="chat-send-button" type="submit" aria-label="Send message" disabled={!draft.trim() || chatLoading}><ArrowUp size={17} /></button>
           </div>
         </form>
       </section>
