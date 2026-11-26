@@ -39,7 +39,7 @@ export const agentChat=async (req, res)=>{
             return res.status(400).json({messages:"Agent not found"})
         }
 
-        const threadId = `${req.user._id.toString()}:${conversationId}`;
+        const threadId = `${req.user._id.toString()}:${existingAgent._id}`;
         const graph=await createAgentGraph(existingAgent,req.user._id.toString())
         const result=await graph.invoke({
             messages:[

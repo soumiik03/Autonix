@@ -9,7 +9,7 @@ import { getMcpTools } from "../mcp/langGraph-mcp.js";
 const llm = new ChatGroq({
     model: "openai/gpt-oss-120b",
     temperature: 0,
-    maxTokens: undefined,
+    maxTokens: 1024,
     maxRetries: 2,
 })
 
@@ -23,8 +23,18 @@ const webSearchTool = mcpTools.find((tool) =>
 const tools = webSearchTool ? [webSearchTool] : [];
 const llmWithTools = llm.bindTools(tools);
 
+const limitMessageContext=(message,maxChar=4000)=>{
+    if(typeof message.content !== "string" || message.content.length<=maxChar){
+        return message
+    }
+    return{
+        ...message,
+        content:message.content.slice(0,maxChar)+`\n[Content Truncated]`
+    }
+}
+
 const chatNode = async (state) => {
-    const recentMessages=state.messages.slice(-4)
+    const recentMessages=state.messages.slice(-4).map((message)=>limitMessageContext(message))
     const response = await llmWithTools.invoke([
         new SystemMessage(
             "Use the web search tool for current weather, latest news, prices, schedules, or any information that may have changed. Do not guess current information."

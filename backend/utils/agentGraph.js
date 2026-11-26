@@ -11,7 +11,7 @@ import { z } from "zod";
 const llm = new ChatGroq({
     model: "openai/gpt-oss-120b",
     temperature: 0,
-    maxTokens: undefined,
+    maxTokens: 1024,
     maxRetries: 2,
 })
 
@@ -20,6 +20,18 @@ const checkpointer = new MongoDBSaver({ client, dbName: "langgraph" });
 
 const findTools=(tools,names)=>{
     return tools.find((tool)=>names?.includes(tool.name))
+}
+const limitMessageContext=(message,maxChar=4000)=>{
+    if(typeof message.content != "string"){
+        return message
+    }
+    if(message.content.length<=maxChar){
+        return message
+    }
+    return{
+        ...message,
+        content:message.content.slice(0,maxChar)+`\n[Content Truncated]`
+    }
 }
 
 export const createAgentGraph=async(agent,userId)=>{
@@ -70,7 +82,8 @@ Use web_search for current weather, latest news, and any information that may ha
     ])
 
     const chatNode = async (state) => {
-        const recentMessages=state.messages.slice(-4)
+        const recentMessages=state.messages.slice(-4).map((message)=>limitMessageContext(message))
+
         const response = await llmWithTools.invoke([
             new SystemMessage(systemPrompt),
             ...recentMessages
