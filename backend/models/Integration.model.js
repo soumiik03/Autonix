@@ -1,0 +1,77 @@
+import mongoose from "mongoose";
+
+const Integration = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    provider: {
+      type: String,
+      required: true,
+      enum: ["google"],
+    },
+    services: [
+      {
+        type: String,
+        enum: ["gmail", "google_calender"],
+      },
+    ],
+    providerAccountId: {
+      type: String,
+      required: true,
+    },
+    account: {
+      email: {
+        type: String,
+        lowercase: true,
+        trim: true,
+      },
+      username: {
+        type: String,
+        trim: true,
+      },
+      displayName: {
+        type: String,
+        trim: true,
+      },
+    },
+    token:{
+        accessToken:{
+            type:String,
+            select:false
+        },
+        refreshToken:{
+            type:String,
+            select:false
+        },
+        expiresAt:{
+            type:Data,
+        }
+    },
+    scopes:[
+        {
+            type:String
+        }
+    ],
+    status:{
+        type:String,
+        enum:["connected","expired","revoked","error"],
+        default:"connected"
+    },
+    connectedAt:{
+        type:Date,
+        default:Date.now,
+    },
+    lastUsedAt:{
+        type:Date,
+        default:null
+    },
+    metadata:{
+        type:mongoose.Schema.Types.Mixed,
+        default:{},
+    }
+  },
+  { timestamps: true },
+);
