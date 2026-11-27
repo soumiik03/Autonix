@@ -78,13 +78,21 @@ export const googleCallback=async()=>{
         connection.scopes=tokens.scope?.split(" ") || scopes
 
         if(tokens.access_token){
-            connection.tokens.access_token=tokens.access_token
+            connection.tokens.access_token=encrypt(tokens.access_token)
         }
         if(tokens.refresh_token){
-            connection.tokens.refreshToken=tokens.refresh_token
+            connection.tokens.refreshToken=encrypt(tokens.refresh_token)
         }
+        if(tokens.expiry_date){
+            connection.tokens.expiresAt=new Date(tokens.expiry_date)
+        }
+        connection.status="connected"
+        connection.connectedAt=new Date()
+        await connection.save()
+
+        return res.redirect(`${process.env.FRONTEND_URL}/integrations?google=connected`)
         
     } catch (error) {
-        
+        return res.status(500).json({message:`Google callback ${error}`})
     }
 }
