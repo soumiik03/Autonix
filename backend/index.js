@@ -6,6 +6,7 @@ import cors from "cors";
 import authRouter from "./routes/auth.route.js";
 import agentRouter from "./routes/agent.routes.js";
 import chatRouter from "./routes/chat.routes.js";
+import IntegrationRouter from "./routes/integration.route.js";
 
 const app=express()
 
@@ -21,6 +22,7 @@ app.use(cookieParser())
 app.use("/api/auth",authRouter)
 app.use("/api/agent",agentRouter)
 app.use("/api/chat",chatRouter)
+app.use("/api/integrations",IntegrationRouter)
 
 app.listen(port,()=>{
     connectDb()

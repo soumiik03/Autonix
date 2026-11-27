@@ -1,5 +1,6 @@
 import { auth } from "googleapis/build/src/apis/abusiveexperiencereport";
 import { oauth2Client } from "../config/googleOauth";
+import Integration from "../models/Integration.model.js";
 import jwt from "jsonwebtoken"
 import { version } from "react";
 
@@ -96,3 +97,59 @@ export const googleCallback=async()=>{
         return res.status(500).json({message:`Google callback ${error}`})
     }
 }
+
+export const getIntegrations = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const integrations = await Integration.find({
+      userId,
+      status: "connected",
+    }).select("-tokens");
+    const googleConnection = integrations.find(
+      (item) => item.provider === "google"
+    );
+
+    return res.status(200).json({
+      success: true,
+      integrations: {
+        gmail: {
+          connected: googleConnection?.services?.includes("gmail") || false,
+          email: googleConnection?.account?.email || null,
+        },
+        google_calender: {
+          connected:
+            googleConnection?.services?.includes("google_calender") || false,
+          email: googleConnection?.account?.email || null,
+        },
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Get integrations failed: ${error.message}`,
+    });
+  }
+};
+
+export const disconnectGoogle = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const connection = await Integration.findOne({
+      userId,
+      provider: "google",
+    });
+
+    if (!connection) {
+      return res.status(400).json({ message: "Google connection not found" });
+    }
+
+    await Integration.deleteOne({ userId, _id: connection._id });
+
+    return res.status(200).json({ message: "Google disconnected" });
+  } 
+  catch (error) {
+    return res.status(500).json({
+      message: `Google disconnection failed: ${error.message}`,
+    });
+  }
+};
