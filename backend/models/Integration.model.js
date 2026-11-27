@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const Integration = new mongoose.Schema(
+const integrationSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -72,6 +72,7 @@ const Integration = new mongoose.Schema(
         type:mongoose.Schema.Types.Mixed,
         default:{},
     }
-  },
-  { timestamps: true },
-);
+  },{ timestamps: true })
+
+const Integration = mongoose.model("Integration", integrationSchema);
+export default Integration
