@@ -6,9 +6,9 @@ export const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_REDIRECT_URI
 );
 
-const scopes = [
+export const scopes = [
   "openid",
-  "gmail",
+  "email",
   "profile",
   'https://www.googleapis.com/auth/calendar.events',
   'https://www.googleapis.com/auth/calendar.readonly',

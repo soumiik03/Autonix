@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { SiteHeader } from "../components/SiteHeader";
 
 export function Home() {
@@ -12,14 +12,11 @@ export function Home() {
           <h1>Focused agents for the work that repeats</h1>
           <p className="home-lead">Create focused agents that turn repeatable work into something simple, fast, and yours.</p>
           <div className="home-actions">
-            <Link className="home-primary-button" to="/agents/new">
-              Create an agent <ArrowRight size={16} />
+            <Link className="home-secondary-link home-create-link" to="/agents/new">
+              Create an agent <ArrowRight size={15} />
             </Link>
-            <Link className="home-secondary-link" to="/agents">
-              View agents
-            </Link>
-            <Link className="home-chat-link" to="/chat">
-              Open workspace
+            <Link className="home-primary-button" to="/chat">
+              Open workspace <ArrowUpRight size={16} />
             </Link>
           </div>
         </section>

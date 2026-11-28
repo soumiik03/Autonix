@@ -1,8 +1,8 @@
-import { auth } from "googleapis/build/src/apis/abusiveexperiencereport";
-import { oauth2Client } from "../config/googleOauth";
+import { google } from "googleapis";
+import { encrypt } from "../config/encrypt-decrypt.js";
+import { oauth2Client, scopes } from "../config/googleOauth.js";
 import Integration from "../models/Integration.model.js";
-import jwt from "jsonwebtoken"
-import { version } from "react";
+import jwt from "jsonwebtoken";
 
 export const connectGoogle = (req, res) => {
   try {
@@ -17,6 +17,8 @@ export const connectGoogle = (req, res) => {
     const url = oauth2Client.generateAuthUrl({
       access_type: "offline",
       scope: scopes,
+      state,
+      prompt:"consent"
     });
 
     return res.status(200).json({success:true,url})
@@ -25,22 +27,25 @@ export const connectGoogle = (req, res) => {
   }
 };
 
-export const googleCallback=async()=>{
+export const googleCallback = async (req, res) => {
     try {
         const {code,state,error}=req.query
         if(error){
             return res.status(400).json({message:"Google Authorization failed"})
         }
+        if (typeof code !== "string" || typeof state !== "string") {
+            return res.status(400).json({ message: "Missing Google authorization code or state" });
+        }
         const decoded=jwt.verify(state,process.env.JWT_SECRET)
         if(decoded.purpose !== "google-oauth" || !decoded.userId){
-            return res.status(200).json({message:"Invalid OAuth State"})
+            return res.status(400).json({message:"Invalid OAuth State"})
         }
         const {tokens} = await oauth2Client.getToken(code)
         oauth2Client.setCredentials(tokens);
 
         const oauth2=google.oauth2({
             version:"v2",
-            auth:googleOAuthClient
+            auth:oauth2Client
         })
         const {data:profile}=await oauth2.userinfo.get()
         if(!profile.id || !profile.email){
@@ -54,13 +59,13 @@ export const googleCallback=async()=>{
         }
 
         let connection=await Integration.findOne(filter)
-        .select("+tokens.accessToken +tokens.refreshToken")
+        .select("+token.accessToken +token.refreshToken")
 
         if(!connection){
             connection=new Integration({
                 ...filter,
                 services:[],
-                tokens:{}
+                token:{}
             })
         }
 
@@ -79,19 +84,19 @@ export const googleCallback=async()=>{
         connection.scopes=tokens.scope?.split(" ") || scopes
 
         if(tokens.access_token){
-            connection.tokens.access_token=encrypt(tokens.access_token)
+            connection.token.accessToken=encrypt(tokens.access_token)
         }
         if(tokens.refresh_token){
-            connection.tokens.refreshToken=encrypt(tokens.refresh_token)
+            connection.token.refreshToken=encrypt(tokens.refresh_token)
         }
         if(tokens.expiry_date){
-            connection.tokens.expiresAt=new Date(tokens.expiry_date)
+            connection.token.expiresAt=new Date(tokens.expiry_date)
         }
         connection.status="connected"
         connection.connectedAt=new Date()
         await connection.save()
 
-        return res.redirect(`${process.env.FRONTEND_URL}/integrations?google=connected`)
+        return res.redirect(`${process.env.FRONTEND_URL}/integration?google=connected`)
         
     } catch (error) {
         return res.status(500).json({message:`Google callback ${error}`})
@@ -104,7 +109,7 @@ export const getIntegrations = async (req, res) => {
     const integrations = await Integration.find({
       userId,
       status: "connected",
-    }).select("-tokens");
+    }).select("-token");
     const googleConnection = integrations.find(
       (item) => item.provider === "google"
     );

@@ -47,7 +47,7 @@ const integrationSchema = new mongoose.Schema(
             select:false
         },
         expiresAt:{
-            type:Data,
+            type:Date,
         }
     },
     scopes:[
