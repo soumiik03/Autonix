@@ -15,6 +15,16 @@ const llm = new ChatGroq({
     maxRetries: 2,
 })
 
+const makeAuthToken=(userId)=>{
+    return jwt.sign({},process.env.MCP_AUTH_SECRET,{
+        algorithm:"HS256",
+        subject:String(userId),
+        expiresIn:"2m",
+        issuer:"Autonix-backend",
+        audience:"autonix-mcp"
+    })
+}
+
 const client = new MongoClient(process.env.MONGODB_URI);
 const checkpointer = new MongoDBSaver({ client, dbName: "langgraph" });
 
