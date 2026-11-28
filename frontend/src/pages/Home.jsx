@@ -12,7 +12,7 @@ export function Home() {
           <h1>Focused agents for the work that repeats</h1>
           <p className="home-lead">Create focused agents that turn repeatable work into something simple, fast, and yours.</p>
           <div className="home-actions">
-            <Link className="home-secondary-link home-create-link" to="/agents/new">
+            <Link className="home-create-button" to="/agents/new">
               Create an agent <ArrowRight size={15} />
             </Link>
             <Link className="home-primary-button" to="/chat">
